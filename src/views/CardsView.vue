@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import CardItem from '../components/CardItem.vue'
-import { useCardStore, type Card } from '@/stores/cards';
+import { computed } from 'vue'
+import CardRarities from '../components/CardRarities.vue'
+import { useCardStore, type Card } from '@/stores/cards'
 
 const store = useCardStore()
 store.fetchCards()
@@ -15,20 +15,22 @@ const cardsByRarity = computed(() => {
     5: new Array<Card>()
   }
 
-  store.cards.forEach(card=>{
+  store.cards.forEach((card) => {
     rarities[card.rarity].push(card)
   })
 
   return rarities
 })
-
 </script>
 
 <template>
   <main>
-    <div v-for="(cardArray, stars) in cardsByRarity" :key="stars">
-      <CardItem :card="card" v-for="card in cardArray" :key="card.card_id" />
-    </div>
+    <CardRarities
+      v-for="(cardArray, stars) in cardsByRarity"
+      :key="stars"
+      :cardArray="cardArray"
+      :rarity="Number(stars)"
+    ></CardRarities>
   </main>
 </template>
 
@@ -36,5 +38,16 @@ const cardsByRarity = computed(() => {
 main {
   display: flex;
   flex-wrap: nowrap;
+  flex-direction: column;
+}
+
+.rarities {
+  display: flex;
+}
+
+.cardUpload {
+  width: 288px;
+  font-size: 200px;
+  padding: 0 auto;
 }
 </style>
