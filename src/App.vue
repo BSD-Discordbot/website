@@ -3,19 +3,21 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <!-- <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <header>
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="25" height="25" />
 
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/card">Cards</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
-  </header> -->
+  </header>
 
   <RouterView />
 </template>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
 
 <style scoped>
 header {

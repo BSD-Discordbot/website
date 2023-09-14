@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import type { Card } from '@/stores/cards'
 import { useCardStore } from '@/stores/cards'
 import { ref } from 'vue'
-import CardItem from './CardItem.vue'
 
 const store = useCardStore()
-
-const props = defineProps<{
-  cardArray: Array<Card>
-  rarity: number
-}>()
 
 let hovered = ref(false)
 
@@ -57,22 +50,25 @@ async function drop(e: DragEvent) {
   files.forEach((file) => {
     const name = file.name.slice(0, -4)
     const card_id = Number(name)
+    let rarity = Number(name[0])
+    if(rarity === 0){
+      rarity = 1
+    }
     if (isNaN(card_id)) {
       alert('error file with name ' + file.name)
       return
     }
     promises.push(store.uploadImage(file, card_id))
-    promises.push(store.createCard(card_id, props.rarity))
+    promises.push(store.createCard(card_id, rarity))
   })
 
-  Promise.allSettled(promises).then((e) => {
+  Promise.allSettled(promises).then(() => {
     store.fetchCards()
   })
 }
 </script>
 
 <template>
-  <div class="rarities">
     <div
       class="cardUpload"
       @dragenter="dragenter"
@@ -82,18 +78,18 @@ async function drop(e: DragEvent) {
     >
       <span class="uploadIcon">📤</span>
     </div>
-    <CardItem :card="card" v-for="card in props.cardArray" :key="card.card_id" />
-  </div>
 </template>
 
 <style scoped>
-.rarities {
-  display: flex;
-}
+
 
 .cardUpload {
-  width: 288px;
-  font-size: 200px;
-  padding: 0 auto;
+  font-size: 100%;
+  /* padding: 0 auto; */
+  width: 144px;
+  height: 230.733px;
+}
+.uploadIcon{
+  font-size: 100px;
 }
 </style>

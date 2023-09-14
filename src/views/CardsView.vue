@@ -1,53 +1,45 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import CardRarities from '../components/CardRarities.vue'
-import { useCardStore, type Card } from '@/stores/cards'
+import CardItem from '../components/CardItem.vue'
+import CardUploader from '@/components/CardUploader.vue';
+import TagMultiselect from '@/components/TagMultiselect.vue';
+import { useCardStore, type Card, type Tag } from '@/stores/cards'
+import { ref, watchEffect } from 'vue';
 
 const store = useCardStore()
 store.fetchCards()
+store.fetchTags()
 
-const cardsByRarity = computed(() => {
-  const rarities: Record<number, Array<Card>> = {
-    1: new Array<Card>(),
-    2: new Array<Card>(),
-    3: new Array<Card>(),
-    4: new Array<Card>(),
-    5: new Array<Card>()
+let cards = ref<Array<Card>>(store.cards)
+
+function setFilter(value: Array<Tag>){
+  const tags = value.map(e=>e.id)
+  if(value.length === 0 ){
+    cards.value = store.cards
+    return
   }
+  console.log(tags)
+  console.log(store.cards.filter(c=>c.tags.length > 0))
+  cards.value = store.cards.filter(c=>tags.every(tag=>c.tags.includes(tag)))
+}
 
-  store.cards.forEach((card) => {
-    rarities[card.rarity].push(card)
-  })
-
-  return rarities
+watchEffect(()=>{
+  
 })
 </script>
 
 <template>
   <main>
-    <CardRarities
-      v-for="(cardArray, stars) in cardsByRarity"
-      :key="stars"
-      :cardArray="cardArray"
-      :rarity="Number(stars)"
-    ></CardRarities>
+    <TagMultiselect @change="setFilter"></TagMultiselect>
+    <CardUploader></CardUploader>
+    <CardItem v-for="card in cards" :key="card.id" :card="card">
+    </CardItem>
   </main>
 </template>
 
 <style scoped>
 main {
   display: flex;
-  flex-wrap: nowrap;
-  flex-direction: column;
-}
-
-.rarities {
-  display: flex;
-}
-
-.cardUpload {
-  width: 288px;
-  font-size: 200px;
-  padding: 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 </style>

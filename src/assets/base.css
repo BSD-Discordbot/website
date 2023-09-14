@@ -1,4 +1,7 @@
 /* color palette from <https://github.com/vuejs/theme> */
+
+@import url('https://fonts.cdnfonts.com/css/gabriola');
+
 :root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
@@ -67,6 +70,7 @@ body {
     background-color 0.5s;
   line-height: 1.6;
   font-family:
+  'Gabriola',
     Inter,
     -apple-system,
     BlinkMacSystemFont,
