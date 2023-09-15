@@ -2,7 +2,9 @@
 import type { Card } from '@/stores/cards'
 import { useCardStore } from '@/stores/cards'
 import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const store = useCardStore()
 
 const props = defineProps<{
@@ -57,6 +59,10 @@ async function drop(e: DragEvent) {
   imgURL.value = URL.createObjectURL(file)
   store.uploadImage(file, props.card.id)
 }
+
+function click(){
+  router.push('/card/'+props.card.id)
+}
 </script>
 
 <template>
@@ -68,6 +74,7 @@ async function drop(e: DragEvent) {
     @dragleave.stop="dragleave"
     @drop.prevent="drop"
     @dragover="dragover"
+    @click="click"
   >
     <img :src="imgURL" />
     <div :class="`cardOverlay ${dragHovered ? 'dragHovered' : ''}`">⟳</div>
@@ -78,6 +85,7 @@ async function drop(e: DragEvent) {
 <style scoped>
 .card {
   position: relative;
+  cursor: pointer;
 }
 
 .card * {

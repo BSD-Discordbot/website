@@ -3,28 +3,27 @@ import CardItem from '../components/CardItem.vue'
 import CardUploader from '@/components/CardUploader.vue';
 import TagMultiselect from '@/components/TagMultiselect.vue';
 import { useCardStore, type Card, type Tag } from '@/stores/cards'
-import { ref, watchEffect } from 'vue';
+import { ref, unref, watch, watchEffect } from 'vue';
 
 const store = useCardStore()
-store.fetchCards()
-store.fetchTags()
 
-let cards = ref<Array<Card>>(store.cards)
+const cards = ref<Array<Card>>(store.cards)
+const filter = ref<Array<Tag>>([])
 
 function setFilter(value: Array<Tag>){
+  filter.value = value
   const tags = value.map(e=>e.id)
   if(value.length === 0 ){
     cards.value = store.cards
     return
   }
-  console.log(tags)
-  console.log(store.cards.filter(c=>c.tags.length > 0))
   cards.value = store.cards.filter(c=>tags.every(tag=>c.tags.includes(tag)))
 }
 
 watchEffect(()=>{
-  
+  setFilter(filter.value)
 })
+
 </script>
 
 <template>

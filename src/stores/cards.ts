@@ -15,7 +15,7 @@ export type Tag = {
 
 export const useCardStore = defineStore('card', () => {
   const cards = ref(new Array<Card>())
-  const tags = ref(new Array<string>())
+  const tags = ref(new Array<Tag>())
   const apiPath = 'http://127.0.0.1:8080'
   // const doubleCount = computed(() => count.value * 2)
   async function fetchCards() {
@@ -44,6 +44,22 @@ export const useCardStore = defineStore('card', () => {
     })
   }
 
+  async function assignTags(card_id: number, tags:Array<number>){
+    await fetch(`${apiPath}/cards/${card_id}/tags`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( tags )
+    })
+    const card = cards.value.find(c => c.id === card_id)
+    console.log(card)
+    if(card !== undefined){
+      card.tags = tags
+      console.log(card.tags)
+    }
+  }
+
   async function fetchTags(){
     const data = await fetch(apiPath + '/tags')
     const json = await data.json()
@@ -51,14 +67,28 @@ export const useCardStore = defineStore('card', () => {
   }
 
   async function createTag(name: string) {
-    return await fetch(`${apiPath}/tags}`, {
-      method: 'PUSH',
+    const req = await fetch(`${apiPath}/tags`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ name })
     })
+    const result: Tag = await req.json()
+    if(req.ok){
+      tags.value.push(result)
+    }
   }
 
-  return { apiPath, cards, tags, fetchCards, uploadImage, createCard, fetchTags, createTag }
+  async function deleteTag(id: number){
+    const req = await fetch(`${apiPath}/tags/${id}`, {
+      method: 'DELETE'
+    })
+    if(req.ok){
+      const index = tags.value.findIndex(tag=>tag.id === id)
+      tags.value.splice(index, 1)
+    }
+  }
+
+  return { apiPath, cards, tags, fetchCards, uploadImage, createCard, fetchTags, createTag, deleteTag, assignTags }
 })

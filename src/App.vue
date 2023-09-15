@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+
+import { useCardStore } from '@/stores/cards'
+
+const store = useCardStore()
+store.fetchCards()
+store.fetchTags()
+
 </script>
 
 <template>
@@ -8,7 +15,8 @@ import { RouterLink, RouterView } from 'vue-router'
 
     <div class="wrapper">
       <nav>
-        <RouterLink to="/card">Cards</RouterLink>
+        <RouterLink to="/cards">Cards</RouterLink>
+        <RouterLink to="/tags">Tags</RouterLink>
         <RouterLink to="/about">About</RouterLink>
       </nav>
     </div>
