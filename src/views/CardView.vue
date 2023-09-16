@@ -11,26 +11,14 @@ const store = useCardStore()
 const card = ref<Card>()
 const cardId = ref<number>()
 
-const tags = ref<Array<number>>([])
-watch(
-  () => route.params.id,
-  (id) => {
-    loadCard(Number(id))
-  }
-)
-
 function loadCard(id: number) {
   if (!isNaN(id)) {
     cardId.value = id
     card.value = store.cards[id]
-    if (card.value !== undefined) {
-      tags.value = card.value.tags
-    }
   }
-
 }
 
-watchEffect(() => {
+watchEffect(()=>{
   loadCard(Number(route.params.id))
 })
 
@@ -71,7 +59,7 @@ function previousCard(){
 
 <template>
   <main>
-    <TagMultiselect @change="setTags" :value="tags"></TagMultiselect>
+    <TagMultiselect @change="setTags" :value="card?.tags"></TagMultiselect>
     <div id="controls">
       <button
         :disabled="cardId === undefined || isFirstCard(cardId)"
