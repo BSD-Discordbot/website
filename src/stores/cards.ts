@@ -59,7 +59,6 @@ export const useCardStore = defineStore('card', () => {
     const card = cards.value[card_id]
     if (card !== undefined) {
       card.tags = tags
-      console.log(card.tags)
     }
   }
 
@@ -89,7 +88,11 @@ export const useCardStore = defineStore('card', () => {
       method: 'DELETE'
     })
     if (req.ok) {
+      //remove tag
       delete tags.value[id]
+      //remove tag from cards
+      //Should probably find another way
+      fetchCards()
     }
   }
 
