@@ -5,7 +5,7 @@ import { ref, watchEffect } from 'vue'
 import Multiselect from 'vue-multiselect'
 const store = useCardStore()
 
-defineEmits<{
+const emit = defineEmits<{
   (event: 'change', value: Array<number>): void
 }>()
 
@@ -23,6 +23,12 @@ watchEffect(() => {
   model.value = props.value ?? []
 })
 
+async function createTag(tag: string){
+  const tagId = await store.createTag(tag)
+  model.value.push(tagId)
+  console.log(tagId)
+  emit("change", model.value)
+}
 </script>
 
 <template>
@@ -32,6 +38,8 @@ watchEffect(() => {
     :multiple="true"
     :custom-label="(tag: number) => store.tags[tag].name"
     @update:modelValue="$emit('change', model)"
+    :taggable="true"
+    @tag="createTag"
   ></Multiselect>
 </template>
 

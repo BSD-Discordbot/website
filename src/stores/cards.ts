@@ -81,6 +81,7 @@ export const useCardStore = defineStore('card', () => {
     if (req.ok) {
       tags.value[id] = { name }
     }
+    return id
   }
 
   async function deleteTag(id: number) {
