@@ -18,7 +18,7 @@ function deleteTag(value: number) {
 
 <template>
   <main>
-    <form id="createTag">
+    <form id="createTag" @submit.prevent>
       <input v-model="newTagName" />
       <span></span>
       <button @click="createTag">+</button>
