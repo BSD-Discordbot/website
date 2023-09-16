@@ -91,8 +91,6 @@ function previousCard(){
 main {
   display: grid;
   width: 100%;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 #controls {

@@ -17,7 +17,7 @@ store.fetchTags()
       <nav>
         <RouterLink to="/cards">Cards</RouterLink>
         <RouterLink to="/tags">Tags</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/upgrades">Upgrades</RouterLink>
       </nav>
     </div>
   </header>
@@ -78,6 +78,7 @@ nav a:first-of-type {
     display: flex;
     place-items: flex-start;
     flex-wrap: wrap;
+    width:100%;
   }
 
   nav {

@@ -18,13 +18,13 @@ let hovered = ref(false)
 let dragHovered = ref(false)
 
 if (props.card) {
-  imgURL.value = `${store.apiPath}/cards/images/${props.id.toString().padStart(4, '0')}`
+  imgURL.value = store.getImageURL(props.id)
 }
 
 watch(
   () => props.id,
   async (newId) => {
-    imgURL.value = `${store.apiPath}/cards/images/${newId.toString().padStart(4, '0')}`
+    imgURL.value = store.getImageURL(newId)
   }
 )
 

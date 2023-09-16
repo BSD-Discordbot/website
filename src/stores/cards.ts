@@ -10,11 +10,18 @@ export type Tag = {
   name: string
 }
 
+export type Upgrade = Record<number, number>
+
 export const useCardStore = defineStore('card', () => {
   const cards = ref<Record<number, Card>>({})
   const tags = ref<Record<number, Tag>>({})
+  const upgrades = ref<Record<number, Upgrade>>({})
   const apiPath = 'http://127.0.0.1:8080'
   // const doubleCount = computed(() => count.value * 2)
+
+  function getImageURL(card:number){
+    return `${apiPath}/cards/images/${card.toString().padStart(4, '0')}`
+  }
   async function fetchCards() {
     const data = await fetch(apiPath + '/cards')
     const json = await data.json()
@@ -85,16 +92,42 @@ export const useCardStore = defineStore('card', () => {
     }
   }
 
+  async function createUpgrade(card: number, requirements: Upgrade) {
+    const req = await fetch(`${apiPath}/upgrade/${card}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requirements)
+    })
+    if (req.ok) {
+      upgrades.value[card] = requirements
+    }
+  }
+
+  async function deleteUpgrade(card: number) {
+    const req = await fetch(`${apiPath}/upgrade/${card}`, {
+      method: 'DELETE'
+    })
+    if (req.ok) {
+      delete upgrades.value[card]
+    }
+  }
+
   return {
     apiPath,
     cards,
     tags,
+    upgrades,
+    getImageURL,
     fetchCards,
     uploadImage,
     createCard,
     fetchTags,
     createTag,
     deleteTag,
-    assignTags
+    assignTags,
+    createUpgrade,
+    deleteUpgrade
   }
 })

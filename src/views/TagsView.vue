@@ -18,12 +18,17 @@ function deleteTag(value: number) {
 
 <template>
   <main>
-    <input v-model="newTagName" />
-    <span></span>
-    <button @click="createTag">+</button>
+    <form id="createTag">
+      <input v-model="newTagName" />
+      <span></span>
+      <button @click="createTag">+</button>
+    </form>
+    
+    <b>Tag</b>
+    <b>Cards</b>
 
     <div class="tags" v-for="(tag, id) in store.tags" :key="id">
-      <span>{{ id }}</span>
+      <span>{{ tag.name }}</span>
       <span>{{
         Object.values(store.cards).reduce((acc, card) => card.tags.includes(Number(id)) ? acc + 1: acc, 0)
       }}</span>
@@ -34,13 +39,17 @@ function deleteTag(value: number) {
 
 <style scoped>
 main {
-  /* display: flex; */
   display: grid;
   grid-template-columns: min-content min-content min-content;
   justify-content: center;
 }
 .tags {
   display: grid;
+  grid-column: 1 / span 3;
+  grid-template-columns: subgrid;
+}
+#createTag{
+  display:grid;
   grid-column: 1 / span 3;
   grid-template-columns: subgrid;
 }
