@@ -8,6 +8,7 @@ const router = useRouter()
 const store = useCardStore()
 
 const props = defineProps<{
+  id: number
   card: Card
 }>()
 
@@ -17,13 +18,13 @@ let hovered = ref(false)
 let dragHovered = ref(false)
 
 if (props.card) {
-  imgURL.value = `${store.apiPath}/cards/images/${props.card.id.toString().padStart(4, '0')}`
+  imgURL.value = `${store.apiPath}/cards/images/${props.id.toString().padStart(4, '0')}`
 }
 
 watch(
-  () => props.card,
-  async (newCard, oldCard) => {
-    imgURL.value = `${store.apiPath}/cards/images/${newCard.id.toString().padStart(4, '0')}`
+  () => props.id,
+  async (newId) => {
+    imgURL.value = `${store.apiPath}/cards/images/${newId.toString().padStart(4, '0')}`
   }
 )
 
@@ -33,19 +34,19 @@ function dragover(e: DragEvent) {
   }
 }
 
-function mouseenter(e: MouseEvent) {
+function mouseenter() {
   hovered.value = true
 }
 
-function mouseleave(e: MouseEvent) {
+function mouseleave() {
   hovered.value = false
 }
 
-function dragenter(e: DragEvent) {
+function dragenter() {
   dragHovered.value = true
 }
 
-function dragleave(e: DragEvent) {
+function dragleave() {
   dragHovered.value = false
 }
 
@@ -57,11 +58,11 @@ async function drop(e: DragEvent) {
   const file = e.dataTransfer.files[0]
   if (!file) return
   imgURL.value = URL.createObjectURL(file)
-  store.uploadImage(file, props.card.id)
+  store.uploadImage(file, props.id)
 }
 
 function click(){
-  router.push('/card/'+props.card.id)
+  router.push('/card/'+props.id)
 }
 </script>
 
@@ -78,7 +79,7 @@ function click(){
   >
     <img :src="imgURL" />
     <div :class="`cardOverlay ${dragHovered ? 'dragHovered' : ''}`">⟳</div>
-    <h1 :class="`cardRarity ${hovered ? 'hovered' : ''}`">{{ '#' + card.id.toString().padStart(4, '0') }}</h1>
+    <h1 :class="`cardRarity ${hovered ? 'hovered' : ''}`">{{ '#' + id.toString().padStart(4, '0') }}</h1>
   </div>
 </template>
 
@@ -86,6 +87,8 @@ function click(){
 .card {
   position: relative;
   cursor: pointer;
+  display:flex;
+  justify-content: center;
 }
 
 .card * {

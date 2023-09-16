@@ -15,11 +15,11 @@ function dragover(e: DragEvent) {
   }
 }
 
-function dragenter(e: DragEvent) {
+function dragenter() {
   hovered.value = true
 }
 
-function dragleave(e: DragEvent) {
+function dragleave() {
   hovered.value = false
 }
 

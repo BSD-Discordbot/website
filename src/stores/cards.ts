@@ -2,20 +2,17 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export type Card = {
-  id: number
   rarity: number
   tags: Array<number>
 }
 
 export type Tag = {
-  id:number
-  name:string
+  name: string
 }
 
-
 export const useCardStore = defineStore('card', () => {
-  const cards = ref(new Array<Card>())
-  const tags = ref(new Array<Tag>())
+  const cards = ref<Record<number, Card>>({})
+  const tags = ref<Record<number, Tag>>({})
   const apiPath = 'http://127.0.0.1:8080'
   // const doubleCount = computed(() => count.value * 2)
   async function fetchCards() {
@@ -44,23 +41,22 @@ export const useCardStore = defineStore('card', () => {
     })
   }
 
-  async function assignTags(card_id: number, tags:Array<number>){
+  async function assignTags(card_id: number, tags: Array<number>) {
     await fetch(`${apiPath}/cards/${card_id}/tags`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify( tags )
+      body: JSON.stringify(tags)
     })
-    const card = cards.value.find(c => c.id === card_id)
-    console.log(card)
-    if(card !== undefined){
+    const card = cards.value[card_id]
+    if (card !== undefined) {
       card.tags = tags
       console.log(card.tags)
     }
   }
 
-  async function fetchTags(){
+  async function fetchTags() {
     const data = await fetch(apiPath + '/tags')
     const json = await data.json()
     tags.value = json
@@ -74,21 +70,31 @@ export const useCardStore = defineStore('card', () => {
       },
       body: JSON.stringify({ name })
     })
-    const result: Tag = await req.json()
-    if(req.ok){
-      tags.value.push(result)
+    const id: number = await req.json()
+    if (req.ok) {
+      tags.value[id] = { name }
     }
   }
 
-  async function deleteTag(id: number){
+  async function deleteTag(id: number) {
     const req = await fetch(`${apiPath}/tags/${id}`, {
       method: 'DELETE'
     })
-    if(req.ok){
-      const index = tags.value.findIndex(tag=>tag.id === id)
-      tags.value.splice(index, 1)
+    if (req.ok) {
+      delete tags.value[id]
     }
   }
 
-  return { apiPath, cards, tags, fetchCards, uploadImage, createCard, fetchTags, createTag, deleteTag, assignTags }
+  return {
+    apiPath,
+    cards,
+    tags,
+    fetchCards,
+    uploadImage,
+    createCard,
+    fetchTags,
+    createTag,
+    deleteTag,
+    assignTags
+  }
 })

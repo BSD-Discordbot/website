@@ -1,37 +1,38 @@
 <script setup lang="ts">
 import CardItem from '../components/CardItem.vue'
-import CardUploader from '@/components/CardUploader.vue';
-import TagMultiselect from '@/components/TagMultiselect.vue';
-import { useCardStore, type Card, type Tag } from '@/stores/cards'
-import { ref, unref, watch, watchEffect } from 'vue';
+import CardUploader from '@/components/CardUploader.vue'
+import TagMultiselect from '@/components/TagMultiselect.vue'
+import { useCardStore } from '@/stores/cards'
+import { ref, watchEffect } from 'vue'
 
 const store = useCardStore()
 
-const cards = ref<Array<Card>>(store.cards)
-const filter = ref<Array<Tag>>([])
+let cards = ref<typeof store.cards>(store.cards)
+let filter = ref<number[]>([])
 
-function setFilter(value: Array<Tag>){
+function setFilter(value: Array<number>) {
   filter.value = value
-  const tags = value.map(e=>e.id)
-  if(value.length === 0 ){
+  if (value.length === 0) {
     cards.value = store.cards
     return
   }
-  cards.value = store.cards.filter(c=>tags.every(tag=>c.tags.includes(tag)))
+  cards.value = Object.fromEntries(
+    Object.entries(store.cards).filter(([id, card]) =>
+      value.every((tag) => card.tags.includes(tag))
+    )
+  )
 }
 
-watchEffect(()=>{
+watchEffect(() => {
   setFilter(filter.value)
 })
-
 </script>
 
 <template>
   <main>
     <TagMultiselect @change="setFilter"></TagMultiselect>
     <CardUploader></CardUploader>
-    <CardItem v-for="card in cards" :key="card.id" :card="card">
-    </CardItem>
+    <CardItem v-for="(card, id) in cards" :key="id" :card="card" :id="Number(id)"> </CardItem>
   </main>
 </template>
 

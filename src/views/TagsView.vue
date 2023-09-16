@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCardStore, type Tag } from '@/stores/cards'
+import { useCardStore } from '@/stores/cards'
 
 const store = useCardStore()
 let newTagName: string
@@ -10,19 +10,24 @@ function createTag() {
   store.fetchTags()
 }
 
-function deleteTag(value: number){
+function deleteTag(value: number) {
   store.deleteTag(value)
 }
+
 </script>
 
 <template>
   <main>
-      <input v-model="newTagName">
-      <button @click="createTag">+</button>
+    <input v-model="newTagName" />
+    <span></span>
+    <button @click="createTag">+</button>
 
-    <div class="tags" v-for="tag in store.tags" :key="tag.id">
-      <span>{{ tag.name }}</span>
-      <button @click="deleteTag(tag.id)">X</button>
+    <div class="tags" v-for="(tag, id) in store.tags" :key="id">
+      <span>{{ id }}</span>
+      <span>{{
+        Object.values(store.cards).reduce((acc, card) => card.tags.includes(Number(id)) ? acc + 1: acc, 0)
+      }}</span>
+      <button @click="deleteTag(id)">X</button>
     </div>
   </main>
 </template>
@@ -31,12 +36,12 @@ function deleteTag(value: number){
 main {
   /* display: flex; */
   display: grid;
-  grid-template-columns: min-content min-content;
+  grid-template-columns: min-content min-content min-content;
   justify-content: center;
 }
-.tags{
+.tags {
   display: grid;
-  grid-column: 1 / span 2;
+  grid-column: 1 / span 3;
   grid-template-columns: subgrid;
 }
 </style>
