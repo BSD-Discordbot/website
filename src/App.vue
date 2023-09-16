@@ -6,6 +6,7 @@ import { useCardStore } from '@/stores/cards'
 const store = useCardStore()
 store.fetchCards()
 store.fetchTags()
+store.fetchUpgrades()
 
 </script>
 

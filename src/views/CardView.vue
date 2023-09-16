@@ -2,7 +2,7 @@
 import CardItem from '../components/CardItem.vue'
 import TagMultiselect from '@/components/TagMultiselect.vue'
 import { useCardStore, type Card } from '@/stores/cards'
-import { ref, watch, watchEffect } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -59,7 +59,7 @@ function previousCard(){
 
 <template>
   <main>
-    <TagMultiselect @change="setTags" :value="card?.tags"></TagMultiselect>
+    <TagMultiselect :value="card?.tags" @change="setTags"></TagMultiselect>
     <div id="controls">
       <button
         :disabled="cardId === undefined || isFirstCard(cardId)"
@@ -70,7 +70,7 @@ function previousCard(){
         @click="nextCard"
         >&#8594;</button>
     </div>
-    <CardItem v-if="card !== undefined && cardId !== undefined" :card="card" :id="cardId">
+    <CardItem v-if="card !== undefined && cardId !== undefined" :id="cardId" :card="card">
     </CardItem>
   </main>
 </template>

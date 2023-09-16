@@ -96,8 +96,14 @@ export const useCardStore = defineStore('card', () => {
     }
   }
 
+  async function fetchUpgrades(){
+    const data = await fetch(apiPath + '/upgrades')
+    const json = await data.json()
+    upgrades.value = json
+  }
+
   async function createUpgrade(card: number, requirements: Upgrade) {
-    const req = await fetch(`${apiPath}/upgrade/${card}`, {
+    const req = await fetch(`${apiPath}/upgrades/${card}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -110,7 +116,7 @@ export const useCardStore = defineStore('card', () => {
   }
 
   async function deleteUpgrade(card: number) {
-    const req = await fetch(`${apiPath}/upgrade/${card}`, {
+    const req = await fetch(`${apiPath}/upgrades/${card}`, {
       method: 'DELETE'
     })
     if (req.ok) {
@@ -131,6 +137,7 @@ export const useCardStore = defineStore('card', () => {
     createTag,
     deleteTag,
     assignTags,
+    fetchUpgrades,
     createUpgrade,
     deleteUpgrade
   }

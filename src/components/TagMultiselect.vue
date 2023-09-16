@@ -12,7 +12,8 @@ const emit = defineEmits<{
 const props = defineProps({
   value: {
     type: Array<number>,
-    required: false
+    required: false,
+    default: undefined
   }
 })
 
@@ -33,12 +34,12 @@ async function createTag(tag: string){
 
 <template>
   <Multiselect
-    :options="Object.keys(store.tags).map(e=>Number(e))"
     v-model="model"
+    :options="Object.keys(store.tags).map(e=>Number(e))"
     :multiple="true"
     :custom-label="(tag: number) => store.tags[tag].name"
-    @update:modelValue="$emit('change', model)"
     :taggable="true"
+    @update:model-value="$emit('change', model)"
     @tag="createTag"
   ></Multiselect>
 </template>

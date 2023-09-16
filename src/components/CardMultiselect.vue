@@ -1,48 +1,56 @@
 <script setup lang="ts">
 import { useCardStore } from '@/stores/cards'
-import { ref, watchEffect } from 'vue'
+import { computed } from 'vue'
 
 import Multiselect from 'vue-multiselect'
 const store = useCardStore()
 
-defineEmits<{
-  (event: 'change', value: Array<number>): void
+const emit = defineEmits<{
+  (event: 'update:modelValue', value: number | undefined): void
 }>()
 
 const props = defineProps({
-  value: {
-    type: Array<number>,
+  modelValue: {
+    type: Number,
+    required: false,
+    default:undefined
+  },
+  disabled: {
+    type: Boolean,
     required: false
   }
 })
 
-let model = ref<Array<number>>([])
-
-watchEffect(() => {
-  model.value = props.value ?? []
+const value = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
 })
+
 </script>
 
 <template>
   <Multiselect
-    :options="Object.keys(store.cards).map((e) => Number(e))"
-    v-model="model"
-    :multiple="false"
-    @update:modelValue="$emit('change', model)"
+    v-model="value"
+    :disabled="disabled"
+    :options="Object.keys(store.cards).map((e) => Number(e))" 
   >
-    <template v-slot:singleLabel="props">
-      <img class="option__image" :src="store.getImageURL(props.option)" />
+    <template #singleLabel="labelProps">
+      <img class="option__image" :src="store.getImageURL(labelProps.option)" />
       <span class="option__desc">
         <span class="option__title">
-          {{ props.option }}
+          {{ labelProps.option }}
         </span>
       </span>
     </template>
-    <template v-slot:option="props">
-      <img class="option__image" :src="store.getImageURL(props.option)" />
+    <template #option="optionProp">
+      <img class="option__image" :src="store.getImageURL(optionProp.option)" />
       <div class="option__desc">
         <span class="option__title">
-          {{ props.option }}
+          {{ optionProp.option }}
           </span>
       </div>
     </template>

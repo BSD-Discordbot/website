@@ -17,7 +17,7 @@ const imgURL = ref('')
 let hovered = ref(false)
 let dragHovered = ref(false)
 
-if (props.card) {
+if (props.card !== undefined) {
   imgURL.value = store.getImageURL(props.id)
 }
 
@@ -56,7 +56,7 @@ async function drop(e: DragEvent) {
     return
   }
   const file = e.dataTransfer.files[0]
-  if (!file) return
+  if (file === undefined) return
   imgURL.value = URL.createObjectURL(file)
   store.uploadImage(file, props.id)
 }

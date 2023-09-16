@@ -27,7 +27,7 @@ function deleteTag(value: number) {
     <b>Tag</b>
     <b>Cards</b>
 
-    <div class="tags" v-for="(tag, id) in store.tags" :key="id">
+    <div v-for="(tag, id) in store.tags" :key="id" class="tags">
       <span>{{ tag.name }}</span>
       <span>{{
         Object.values(store.cards).reduce((acc, card) => card.tags.includes(Number(id)) ? acc + 1: acc, 0)
