@@ -1,46 +1,45 @@
 <script setup lang="ts">
 import { useCardStore } from '@/stores/cards'
-import { ref, watchEffect } from 'vue'
+import { computed } from 'vue'
 
 import Multiselect from 'vue-multiselect'
 const store = useCardStore()
 
 const emit = defineEmits<{
-  (event: 'change', value: Array<number>): void
+  (event: 'update:modelValue', value: Array<number> | undefined): void
 }>()
 
 const props = defineProps({
-  value: {
+  modelValue: {
     type: Array<number>,
     required: false,
-    default: undefined
+    default: []
   }
 })
 
-let model = ref<Array<number>>([])
-
-
-watchEffect(() => {
-  model.value = props.value ?? []
+const value = computed({
+  get() {
+    return props.modelValue
+  },
+  set(value) {
+    emit('update:modelValue', value)
+  }
 })
 
 async function createTag(tag: string){
   const tagId = await store.createTag(tag)
-  model.value.push(tagId)
-  console.log(tagId)
-  emit("change", model.value)
+  value.value.push(tagId)
 }
 </script>
 
 <template>
   <Multiselect
-    v-model="model"
+    v-model="value"
     :options="Object.keys(store.tags).map(e=>Number(e))"
     :multiple="true"
     :custom-label="(tag: number) => store.tags[tag].name"
     :taggable="true"
     placeholder="Select Tags"
-    @update:model-value="$emit('change', model)"
     @tag="createTag"
   ></Multiselect>
 </template>
