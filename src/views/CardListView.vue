@@ -25,24 +25,24 @@ function filterCards(){
     tags.value.every((tag) => card.tags.includes(tag))
     ))
   }
+
+  console.log(events)
   if(((e): e is Ref<number[]> => e.value !== undefined && e.value !== null)(events)){
+    console.log("a")
     cards.value = Object.fromEntries(
     Object.entries(cards.value).filter(([id]) =>
     events.value.every(event => store.events[event].cards.includes(Number(id)))))
   }
+
+  
 }
 
 function setTagsFilter(value: Array<number>) {
   tags.value = value
   if (value.length === 0) {
     cards.value = store.cards
-    return
   }
-  cards.value = Object.fromEntries(
-    Object.entries(store.cards).filter(([, card]) =>
-      value.every((tag) => card.tags.includes(tag))
-    )
-  )
+  filterCards()
 }
 
 watchEffect(() => {
