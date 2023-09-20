@@ -23,8 +23,6 @@ function createEvent() {
   } else {
     endDate = new Date(newEventEnd.value)
   }
-
-  console.log(newEventDefault)
   store.createEvent(newEventName.value, newEventDefault.value, startDate, endDate)
 }
 

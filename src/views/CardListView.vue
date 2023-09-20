@@ -22,7 +22,6 @@ const cards = computed<typeof store.cards>(() => {
   }
 
   if(((e): e is Ref<number[]> => e.value !== undefined && e.value !== null)(events)){
-    console.log("a")
     value = Object.fromEntries(
     Object.entries(value).filter(([id]) =>
     events.value.every(event => store.events[event].cards.includes(Number(id)))))
