@@ -36,7 +36,8 @@ const value = computed({
   <Multiselect
     v-model="value"
     :disabled="disabled"
-    :options="Object.keys(store.cards).map((e) => Number(e))" 
+    :options="Object.keys(store.cards).map((e) => Number(e))"
+    placeholder="Select Card" 
   >
     <template #singleLabel="labelProps">
       <img class="option__image" :src="store.getImageURL(labelProps.option)" />

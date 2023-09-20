@@ -10,16 +10,25 @@ export type Tag = {
   name: string
 }
 
+export type Event = {
+  default: boolean
+  start_time?: Date
+  end_time?: Date
+  name: string
+  cards: number[]
+}
+
 export type Upgrade = Record<number, number>
 
 export const useCardStore = defineStore('card', () => {
   const cards = ref<Record<number, Card>>({})
   const tags = ref<Record<number, Tag>>({})
   const upgrades = ref<Record<number, Upgrade>>({})
+  const events = ref<Record<number, Event>>({})
   const apiPath = 'http://127.0.0.1:8080'
   // const doubleCount = computed(() => count.value * 2)
 
-  function getImageURL(card:number){
+  function getImageURL(card: number) {
     return `${apiPath}/cards/images/${card.toString().padStart(4, '0')}`
   }
   async function fetchCards() {
@@ -96,7 +105,7 @@ export const useCardStore = defineStore('card', () => {
     }
   }
 
-  async function fetchUpgrades(){
+  async function fetchUpgrades() {
     const data = await fetch(apiPath + '/upgrades')
     const json = await data.json()
     upgrades.value = json
@@ -124,11 +133,76 @@ export const useCardStore = defineStore('card', () => {
     }
   }
 
+  async function fetchEvents() {
+    const data = await fetch(apiPath + '/events')
+    const json = await data.json()
+    events.value = json
+  }
+
+  async function createEvent(
+    name: string,
+    isdefault: boolean = false,
+    start_time?: Date,
+    end_time?: Date
+  ) {
+    const result = await fetch(`${apiPath}/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, start_time, end_time, default: isdefault })
+    })
+    const id = await result.json()
+    if (result.ok) {
+      events.value[Number(id)] = {
+        default: isdefault,
+        name,
+        start_time,
+        end_time,
+        cards: []
+      }
+    }
+  }
+
+  async function assignEvents(card_id: number, _events: Array<number>) {
+    const result = await fetch(`${apiPath}/cards/${card_id}/events`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(_events)
+    })
+    if (result.ok) {
+      Object.keys(events.value).forEach((event_id) => {
+        const event = events.value[Number(event_id)]
+        event.cards = event.cards.filter((c) => c != card_id)
+      })
+
+      _events.forEach((e) => {
+        events.value[e].cards.push(card_id)
+      })
+    }
+  }
+
+  async function deleteEvent(id: number) {
+    const req = await fetch(`${apiPath}/events/${id}`, {
+      method: 'DELETE'
+    })
+    if (req.ok) {
+      //remove tag
+      delete events.value[id]
+      //remove tag from cards
+      //Should probably find another way
+      fetchEvents()
+    }
+  }
+
   return {
     apiPath,
     cards,
     tags,
     upgrades,
+    events,
     getImageURL,
     fetchCards,
     uploadImage,
@@ -139,6 +213,10 @@ export const useCardStore = defineStore('card', () => {
     assignTags,
     fetchUpgrades,
     createUpgrade,
-    deleteUpgrade
+    deleteUpgrade,
+    fetchEvents,
+    createEvent,
+    assignEvents,
+    deleteEvent
   }
 })

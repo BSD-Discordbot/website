@@ -39,6 +39,7 @@ async function createTag(tag: string){
     :multiple="true"
     :custom-label="(tag: number) => store.tags[tag].name"
     :taggable="true"
+    placeholder="Select Tags"
     @update:model-value="$emit('change', model)"
     @tag="createTag"
   ></Multiselect>

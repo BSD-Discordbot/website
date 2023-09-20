@@ -7,6 +7,7 @@ const store = useCardStore()
 store.fetchCards()
 store.fetchTags()
 store.fetchUpgrades()
+store.fetchEvents()
 
 </script>
 
@@ -18,6 +19,7 @@ store.fetchUpgrades()
       <nav>
         <RouterLink to="/cards">Cards</RouterLink>
         <RouterLink to="/tags">Tags</RouterLink>
+        <RouterLink to="/events">Events</RouterLink>
         <RouterLink to="/upgrades">Upgrades</RouterLink>
       </nav>
     </div>

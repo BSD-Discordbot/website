@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import CardItem from '../components/CardItem.vue'
 import TagMultiselect from '@/components/TagMultiselect.vue'
+import EventMultiselect from '@/components/EventMultiselect.vue'
 import { useCardStore, type Card } from '@/stores/cards'
-import { ref, watchEffect } from 'vue'
+import { ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -11,10 +12,13 @@ const store = useCardStore()
 const card = ref<Card>()
 const cardId = ref<number>()
 
+const events = ref<Array<number>>([])
+
 function loadCard(id: number) {
   if (!isNaN(id)) {
     cardId.value = id
     card.value = store.cards[id]
+    events.value = Object.entries(store.events).filter(([, value]) => value.cards.includes(id)).map(e=>Number(e[0]))
   }
 }
 
@@ -22,9 +26,16 @@ watchEffect(()=>{
   loadCard(Number(route.params.id))
 })
 
+
 async function setTags(newTags: Array<number>) {
   if (card.value !== undefined && newTags !== undefined && cardId.value !== undefined) {
     store.assignTags(cardId.value, newTags)
+  }
+}
+
+function setEvents(newEvents: Array<number> | undefined){
+  if (card.value !== undefined && newEvents !== undefined && cardId.value !== undefined) {
+    store.assignEvents(cardId.value, newEvents)
   }
 }
 
@@ -58,8 +69,12 @@ function previousCard(){
 </script>
 
 <template>
-  <main>
-    <TagMultiselect :value="card?.tags" @change="setTags"></TagMultiselect>
+  <main id="card-view">
+    <div id="filters">
+      <TagMultiselect :value="card?.tags" @change="setTags"></TagMultiselect>
+      <EventMultiselect v-model="events" @update:model-value="setEvents"></EventMultiselect>
+    </div>
+    
     <div id="controls">
       <button
         :disabled="cardId === undefined || isFirstCard(cardId)"
@@ -84,4 +99,10 @@ main {
 #controls {
   display: flex;
   justify-content: space-between;
-}</style>
+}
+
+
+#filters{
+  display:flex;
+}
+</style>

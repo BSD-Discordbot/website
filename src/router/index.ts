@@ -26,6 +26,11 @@ const router = createRouter({
       path:'/tags',
       name:'tags',
       component:() => import('../views/TagsView.vue')
+    },
+    {
+      path:'/events',
+      name:'events',
+      component:() => import('../views/EventView.vue')
     }
   ]
 })
