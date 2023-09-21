@@ -1,9 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import CardListView from '../views/CardListView.vue'
+import MainView from '../views/MainView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/',
+      name: 'index',
+      component: MainView
+    },
     {
       path: '/cards',
       name: 'cards',
@@ -12,7 +18,7 @@ const router = createRouter({
     {
       path: '/card/:id',
       name: 'card',
-      component:  () => import('../views/CardView.vue')
+      component: () => import('../views/CardView.vue')
     },
     {
       path: '/upgrades',
@@ -23,14 +29,14 @@ const router = createRouter({
       component: () => import('../views/UpgradeView.vue')
     },
     {
-      path:'/tags',
-      name:'tags',
-      component:() => import('../views/TagsView.vue')
+      path: '/tags',
+      name: 'tags',
+      component: () => import('../views/TagsView.vue')
     },
     {
-      path:'/events',
-      name:'events',
-      component:() => import('../views/EventView.vue')
+      path: '/events',
+      name: 'events',
+      component: () => import('../views/EventView.vue')
     }
   ]
 })
