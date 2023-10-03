@@ -25,7 +25,7 @@ export const useCardStore = defineStore('card', () => {
   const tags = ref<Record<number, Tag>>({})
   const upgrades = ref<Record<number, Upgrade>>({})
   const events = ref<Record<number, Event>>({})
-  const apiPath = 'http://127.0.0.1:8080'
+  const apiPath = import.meta.env.VITE_API_PATH
   // const doubleCount = computed(() => count.value * 2)
 
   function getImageURL(card: number) {
