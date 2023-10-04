@@ -21,11 +21,11 @@ const cards = computed<typeof store.cards>(() => {
     ))
   }
 
-  if(((e): e is Ref<number[]> => e.value !== undefined && e.value !== null)(events)){
-    value = Object.fromEntries(
-    Object.entries(value).filter(([id]) =>
-    events.value.every(event => store.events[event].cards.includes(Number(id)))))
-  }  
+  // if(((e): e is Ref<number[]> => e.value !== undefined && e.value !== null)(events)){
+  //   value = Object.fromEntries(
+  //   Object.entries(value).filter(([id]) =>
+  //   events.value.every(event => store.events[event].cards.includes(Number(id)))))
+  // }  
   return value
 })
 </script>
@@ -34,11 +34,11 @@ const cards = computed<typeof store.cards>(() => {
   <main>
     <div id="filters">
       <TagMultiselect v-model="tags"></TagMultiselect>
-      <EventMultiselect v-model="events" ></EventMultiselect>
+      <!-- <EventMultiselect v-model="events" ></EventMultiselect> -->
     </div>
     
     <CardUploader></CardUploader>
-    <CardItem v-for="(card, id) in cards" :id="Number(id)" :key="id" :card="card"> </CardItem>
+    <CardItem v-for="(card, id) in cards" :id="id" :key="id" :card="card"> </CardItem>
   </main>
 </template>
 

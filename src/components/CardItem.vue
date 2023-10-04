@@ -8,7 +8,7 @@ const router = useRouter()
 const store = useCardStore()
 
 const props = defineProps<{
-  id: number
+  id: string
   card: Card
 }>()
 

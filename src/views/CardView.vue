@@ -2,7 +2,7 @@
 import CardItem from '../components/CardItem.vue'
 import TagMultiselect from '@/components/TagMultiselect.vue'
 import EventMultiselect from '@/components/EventMultiselect.vue'
-import { useCardStore, type Card } from '@/stores/cards'
+import { useCardStore } from '@/stores/cards'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -10,74 +10,58 @@ const router = useRouter()
 const route = useRoute()
 const store = useCardStore()
 
-const cardId = computed(()=>{
-  const id = Number(route.params.id)
-  if (!isNaN(id)) {
-    return id
+
+const card = computed(()=>{
+  if(Array.isArray(route.params.id)){
+    return undefined
   }
-  return undefined
+  return store.cards[route.params.id]
 })
 
-const card = computed<Card | undefined>(() => {
-  if (cardId.value !== undefined) {
-    return store.cards[cardId.value]
-  }
-  return undefined
-})
+// const card = Array.isArray(route.params.id) ? undefined : store.cards[route.params.id]
+// console.log(card)
 
-const tags = computed<number[]>({
-  get() {
-    return card.value?.tags ?? []
-  },
-  set(value) {
-    const id = cardId.value
-    if (value !== undefined && id !== undefined) {
-      store.assignTags(id, value)
-    }
-  }
-})
+// const events = computed<number[]>({
+//   get() {
+//     const id = cardId.value
+//     if(id !== undefined){
+//       return Object.entries(store.events)
+//       .filter(([, value]) => value.cards.includes(id))
+//       .map((e) => Number(e[0]))
+//     }
+//     return []
+//   },
+//   set(value) {
+//     const id = cardId.value
+//     if (value !== undefined && id !== undefined) {
+//       store.assignEvents(id, value)
+//     }
+//   }
+// })
 
-const events = computed<number[]>({
-  get() {
-    const id = cardId.value
-    if(id !== undefined){
-      return Object.entries(store.events)
-      .filter(([, value]) => value.cards.includes(id))
-      .map((e) => Number(e[0]))
-    }
-    return []
-  },
-  set(value) {
-    const id = cardId.value
-    if (value !== undefined && id !== undefined) {
-      store.assignEvents(id, value)
-    }
-  }
-})
-
-function isLastCard(id: number) {
-  return Object.keys(store.cards).indexOf(id.toString()) === Object.keys(store.cards).length - 1
+function isLastCard(id: string) {
+  return Object.keys(store.cards).indexOf(id) === Object.keys(store.cards).length - 1
 }
 
-function isFirstCard(id: number) {
-  return Object.keys(store.cards).indexOf(id.toString()) === 0
+function isFirstCard(id: string) {
+  return Object.keys(store.cards).indexOf(id) === 0
 }
 
 function nextCard() {
-  if (cardId.value === undefined || isLastCard(cardId.value)) {
+  if (card.value === undefined || isLastCard(card.value.name)) {
     return
   }
 
-  const currentCardIndex = Object.keys(store.cards).indexOf(cardId.value.toString())
+  const currentCardIndex = Object.keys(store.cards).indexOf(card.value.name)
 
   router.push('/card/' + Object.keys(store.cards)[currentCardIndex + 1])
 }
 
 function previousCard() {
-  if (cardId.value === undefined || isFirstCard(cardId.value)) {
+  if (card.value === undefined || isFirstCard(card.value.name)) {
     return
   }
-  const currentCardIndex = Object.keys(store.cards).indexOf(cardId.value.toString())
+  const currentCardIndex = Object.keys(store.cards).indexOf(card.value.name)
 
   router.push('/card/' + Object.keys(store.cards)[currentCardIndex - 1])
 }
@@ -86,19 +70,19 @@ function previousCard() {
 <template>
   <main id="card-view">
     <div id="filters">
-      <TagMultiselect v-model="tags"></TagMultiselect>
-      <EventMultiselect v-model="events"></EventMultiselect>
+      <TagMultiselect v-if="card" v-model="card.tags"></TagMultiselect>
+      <!-- <EventMultiselect v-model="events"></EventMultiselect> -->
     </div>
 
     <div id="controls">
-      <button :disabled="cardId === undefined || isFirstCard(cardId)" @click="previousCard">
+      <button :disabled="card === undefined || isFirstCard(card.name)" @click="previousCard">
         &#8592;
       </button>
-      <button :disabled="cardId === undefined || isLastCard(cardId)" @click="nextCard">
+      <button :disabled="card === undefined || isLastCard(card?.name)" @click="nextCard">
         &#8594;
       </button>
     </div>
-    <CardItem v-if="card !== undefined && cardId !== undefined" :id="cardId" :card="card">
+    <CardItem v-if="card !== undefined && card !== undefined" :id="card.name" :card="card">
     </CardItem>
   </main>
 </template>

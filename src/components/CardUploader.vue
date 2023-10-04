@@ -58,8 +58,8 @@ async function drop(e: DragEvent) {
       alert('error file with name ' + file.name)
       return
     }
-    promises.push(store.uploadImage(file, card_id))
-    promises.push(store.createCard(card_id, rarity))
+    promises.push(store.uploadImage(file, name))
+    promises.push(store.createCard(name, rarity))
   })
 
   Promise.allSettled(promises).then(() => {
