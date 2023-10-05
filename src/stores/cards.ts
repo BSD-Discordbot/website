@@ -28,23 +28,25 @@ export const useCardStore = defineStore('card', () => {
   const apiPath = import.meta.env.VITE_API_PATH
 
   class Card {
+    readonly id: number
     readonly name: string
     readonly rarity: number
-    _tags: Array<Tag>
+    _tags: Array<number>
     _upgrades: Array<Upgrade>
-    constructor({rarity=1, tags=[], upgrades=[], name}: {rarity: Card['rarity'], tags: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
+    constructor({id, rarity=1, tags=[], upgrades=[], name}: {id: Card['id'], rarity: Card['rarity'], tags: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
       this.rarity = rarity
       this._tags = tags
       this._upgrades = upgrades
       this.name = name
+      this.id = id
     }
     
-    public set tags(v : Array<Tag>) {
+    public set tags(v : Array<number>) {
       this._tags = v;
       this.update()
     }
 
-    public get tags() : Array<Tag> {
+    public get tags() : Array<number> {
       return this._tags
     }
 
@@ -72,7 +74,7 @@ export const useCardStore = defineStore('card', () => {
     }
 
     public async refetch(){
-      const card = await fetch(`${apiPath}/cards/${this.name}`, {
+      const card = await fetch(`${apiPath}/cards/${this.id}`, {
         method: 'GET',
       })
       delete cards.value[this.name]
@@ -83,12 +85,12 @@ export const useCardStore = defineStore('card', () => {
     }
 
     public toJSON(){
-      console.log(this.tags)
       return {
         rarity: this.rarity,
         tags: this.tags,
         upgrades: this.upgrades,
-        name: this.name
+        name: this.name,
+        id: this.id
       }
     }
   }
