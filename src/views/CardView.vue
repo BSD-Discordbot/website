@@ -18,26 +18,23 @@ const card = computed(()=>{
   return store.cards[route.params.id]
 })
 
-// const card = Array.isArray(route.params.id) ? undefined : store.cards[route.params.id]
-// console.log(card)
-
-// const events = computed<number[]>({
-//   get() {
-//     const id = cardId.value
-//     if(id !== undefined){
-//       return Object.entries(store.events)
-//       .filter(([, value]) => value.cards.includes(id))
-//       .map((e) => Number(e[0]))
-//     }
-//     return []
-//   },
-//   set(value) {
-//     const id = cardId.value
-//     if (value !== undefined && id !== undefined) {
-//       store.assignEvents(id, value)
-//     }
-//   }
-// })
+const events = computed<number[]>({
+  get() {
+    const card_name = card.value?.name
+    if(card_name !== undefined){
+      return Object.entries(store.events)
+      .filter(([, value]) => value.cards_names.includes(card_name))
+      .map((e) => Number(e[0]))
+    }
+    return []
+  },
+  set(value) {
+    const card_name = card.value?.name
+    if (value !== undefined && card_name !== undefined) {
+      // store.assignEvents(id, value)
+    }
+  }
+})
 
 function isLastCard(id: string) {
   return Object.keys(store.cards).indexOf(id) === Object.keys(store.cards).length - 1
@@ -71,7 +68,7 @@ function previousCard() {
   <main id="card-view">
     <div id="filters">
       <TagMultiselect v-if="card" v-model="card.tags"></TagMultiselect>
-      <!-- <EventMultiselect v-model="events"></EventMultiselect> -->
+      <EventMultiselect v-model="events"></EventMultiselect>
     </div>
 
     <div id="controls">

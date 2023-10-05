@@ -4,10 +4,8 @@ import { useCardStore } from '@/stores/cards'
 const store = useCardStore()
 let newTagName: string
 
-store.fetchTags()
 function createTag() {
   store.createTag(newTagName)
-  store.fetchTags()
   newTagName = ""
 }
 

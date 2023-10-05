@@ -84,13 +84,14 @@ async function uploadFiles(fileList: FileList){
 </script>
 
 <template>
-  <input type="file" multiple="true" accept=".png" @change="change">
+  <input ref="input" type="file" multiple="true" accept=".png" hidden="true" @change="change">
     <div
       class="cardUpload"
       @dragenter="dragenter"
       @dragleave="dragleave"
       @drop.prevent="drop"
       @dragover="dragover"
+      @click="($refs.input as HTMLInputElement).click()"
     >
       <span class="uploadIcon">📤</span>
     </div>
@@ -104,6 +105,7 @@ async function uploadFiles(fileList: FileList){
   /* padding: 0 auto; */
   width: 144px;
   height: 230.733px;
+  cursor:pointer;
 }
 .uploadIcon{
   font-size: 100px;

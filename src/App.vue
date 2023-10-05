@@ -7,7 +7,7 @@ const store = useCardStore()
 store.fetchCards()
 store.fetchTags()
 // store.fetchUpgrades()
-// store.fetchEvents()
+store.fetchEvents()
 
 </script>
 
