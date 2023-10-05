@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Card } from '@/stores/cards'
-import { useCardStore } from '@/stores/cards'
+import { Card, useCardStore } from '@/stores/cards'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 
@@ -56,9 +55,13 @@ async function drop(e: DragEvent) {
     return
   }
   const file = e.dataTransfer.files[0]
+  setImage(file)
+  store.uploadImage(file, props.id)
+}
+
+async function setImage(file: File){
   if (file === undefined) return
   imgURL.value = URL.createObjectURL(file)
-  store.uploadImage(file, props.id)
 }
 
 function click(){

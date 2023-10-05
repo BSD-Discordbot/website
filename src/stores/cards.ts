@@ -21,24 +21,40 @@ export type Event = {
   cards: number[]
 }
 
+export declare class Card{
+  readonly name: string
+  readonly rarity: number
+  tags: Array<number>
+  upgrades: Array<Upgrade>
+  constructor({rarity=1, tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']})
+  update(): Promise<void>
+  refetch(): Promise<void>
+  toJSON(): {
+    rarity: number;
+    tags_ids: number[];
+    upgrades: Upgrade[];
+    name: string;
+  }
+}
+
+
+
 // export type Upgrade = Record<string, string>
 
 export const useCardStore = defineStore('card', () => {
 
   const apiPath = import.meta.env.VITE_API_PATH
 
-  class Card {
-    readonly id: number
+  class Card implements Card {
     readonly name: string
     readonly rarity: number
     _tags: Array<number>
     _upgrades: Array<Upgrade>
-    constructor({id, rarity=1, tags=[], upgrades=[], name}: {id: Card['id'], rarity: Card['rarity'], tags: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
+    constructor({rarity=1, tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
       this.rarity = rarity
-      this._tags = tags
+      this._tags = tags_ids
       this._upgrades = upgrades
       this.name = name
-      this.id = id
     }
     
     public set tags(v : Array<number>) {
@@ -59,7 +75,6 @@ export const useCardStore = defineStore('card', () => {
       return this._upgrades
     }
     
-    
     public async update(){
       const response = await fetch(`${apiPath}/cards/${this.name}`, {
         method: 'PUT',
@@ -74,7 +89,7 @@ export const useCardStore = defineStore('card', () => {
     }
 
     public async refetch(){
-      const card = await fetch(`${apiPath}/cards/${this.id}`, {
+      const card = await fetch(`${apiPath}/cards/${this.name}`, {
         method: 'GET',
       })
       delete cards.value[this.name]
@@ -87,10 +102,9 @@ export const useCardStore = defineStore('card', () => {
     public toJSON(){
       return {
         rarity: this.rarity,
-        tags: this.tags,
+        tags_ids: this.tags,
         upgrades: this.upgrades,
-        name: this.name,
-        id: this.id
+        name: this.name
       }
     }
   }
@@ -120,21 +134,24 @@ export const useCardStore = defineStore('card', () => {
 
   async function uploadImage(file: File, card: string) {
     const formData = new FormData()
-    const urlID = card
     formData.append('file', file)
-    return await fetch(`${apiPath}/cards/${urlID}/images`, {
+    return await fetch(getImageURL(card), {
       method: 'PUT',
       body: formData
     })
   }
 
-  async function createCard(card_id: string, rarity: number) {
-    return await fetch(`${apiPath}/cards/${card_id}`, {
-      method: 'PUT',
+  async function createCard(name:string, rarity:number) {
+    return await fetch(`${apiPath}/cards/${name}`, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ rarity })
+      body: JSON.stringify({
+        rarity,
+        tags_ids: [],
+        upgrades: [],
+        name: name  })
     })
   }
 

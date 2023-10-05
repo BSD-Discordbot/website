@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCardStore, type Tag } from '@/stores/cards'
+import { useCardStore } from '@/stores/cards'
 import { computed } from 'vue'
 
 import Multiselect from 'vue-multiselect'
@@ -14,6 +14,11 @@ const props = defineProps({
     type: Array<number>,
     required: false,
     default: []
+  },
+  disabled:{
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -22,7 +27,6 @@ const value = computed({
     return props.modelValue
   },
   set(value) {
-    console.log(value)
     emit('update:modelValue', value)
   }
 })
@@ -36,7 +40,7 @@ async function createTag(tag: string){
 <template>
   <Multiselect
     v-model="value"
-    track-by="id"
+    :disabled="disabled"
     :options="Object.values(store.tags).map(e=>e.id)"
     :multiple="true"
     :custom-label="(e: number) => store.tags[e].name"

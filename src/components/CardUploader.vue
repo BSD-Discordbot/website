@@ -23,14 +23,24 @@ function dragleave() {
   hovered.value = false
 }
 
-const promises = new Array<Promise<Response>>()
-
 async function drop(e: DragEvent) {
   hovered.value = false
   if (!e.dataTransfer) {
     return
   }
-  const files = Array.from(e.dataTransfer.files)
+  uploadFiles(e.dataTransfer.files)
+}
+
+async function change(e: Event){
+  const element = e.target as HTMLInputElement
+  if(element.files !== null){
+    uploadFiles(element.files)
+  }
+}
+async function uploadFiles(fileList: FileList){
+  const cardUpload = new Array<Promise<File>>()
+
+  const files = Array.from(fileList)
   if (!files.every((e) => e.type === 'image/png')) {
     alert('all files must be png images')
     return
@@ -58,17 +68,23 @@ async function drop(e: DragEvent) {
       alert('error file with name ' + file.name)
       return
     }
-    promises.push(store.uploadImage(file, name))
-    promises.push(store.createCard(name, rarity))
+    const existing = Object.values(store.cards).find(e=>e.name === name)
+    if(!existing){
+      cardUpload.push(store.createCard(name, rarity).then(()=>file))
+    }else{
+      cardUpload.push((async ()=>file)())
+    }
   })
 
-  Promise.allSettled(promises).then(() => {
-    store.fetchCards()
-  })
+  const images = await Promise.all(cardUpload)
+  await Promise.allSettled(images.map(img=>store.uploadImage(img, img.name.slice(0, -4))))
+  store.fetchCards()
+  
 }
 </script>
 
 <template>
+  <input type="file" multiple="true" accept=".png" @change="change">
     <div
       class="cardUpload"
       @dragenter="dragenter"

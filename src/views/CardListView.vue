@@ -3,7 +3,7 @@ import CardItem from '../components/CardItem.vue'
 import CardUploader from '@/components/CardUploader.vue'
 import TagMultiselect from '@/components/TagMultiselect.vue'
 import EventMultiselect from '@/components/EventMultiselect.vue'
-import { useCardStore } from '@/stores/cards'
+import { Card, useCardStore } from '@/stores/cards'
 import { ref, type Ref, computed } from 'vue'
 
 const store = useCardStore()
@@ -12,7 +12,7 @@ const store = useCardStore()
 const tags = ref<number[]>([])
 const events = ref<number[]>([])
 
-const cards = computed<typeof store.cards>(() => {
+const cards = computed<Array<Card>>(() => {
   let value = store.cards
   if (tags.value.length !== 0) {
     value = Object.fromEntries(
@@ -26,7 +26,7 @@ const cards = computed<typeof store.cards>(() => {
   //   Object.entries(value).filter(([id]) =>
   //   events.value.every(event => store.events[event].cards.includes(Number(id)))))
   // }  
-  return value
+  return Object.keys(value).sort().map(e=>value[e])
 })
 </script>
 
@@ -38,7 +38,7 @@ const cards = computed<typeof store.cards>(() => {
     </div>
     
     <CardUploader></CardUploader>
-    <CardItem v-for="(card, id) in cards" :id="id" :key="id" :card="card"> </CardItem>
+    <CardItem v-for="(card, id) in cards" :id="card.name" :key="id" :card="card"> </CardItem>
   </main>
 </template>
 
