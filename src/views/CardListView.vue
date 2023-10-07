@@ -21,11 +21,12 @@ const cards = computed<Array<Card>>(() => {
     ))
   }
 
-  // if(((e): e is Ref<number[]> => e.value !== undefined && e.value !== null)(events)){
-  //   value = Object.fromEntries(
-  //   Object.entries(value).filter(([id]) =>
-  //   events.value.every(event => store.events[event].cards.includes(Number(id)))))
-  // }  
+  if(events.value.length !== 0){
+    value = Object.fromEntries(
+    Object.entries(value).filter(([, card]) =>
+    events.value.every((event) => card.events.includes(event))
+    ))
+  }  
   return Object.keys(value).sort().map(e=>value[e])
 })
 </script>
@@ -34,7 +35,7 @@ const cards = computed<Array<Card>>(() => {
   <main>
     <div id="filters">
       <TagMultiselect v-model="tags"></TagMultiselect>
-      <!-- <EventMultiselect v-model="events" ></EventMultiselect> -->
+      <EventMultiselect v-model="events" ></EventMultiselect>
     </div>
     
     <CardUploader></CardUploader>

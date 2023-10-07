@@ -19,20 +19,21 @@ export type Event = {
   start_time?: Date
   end_time?: Date
   name: string
-  cards_names: string[]
 }
 
 export declare class Card{
   readonly name: string
   readonly rarity: number
   tags: Array<number>
+  events: Array<number>
   upgrades: Array<Upgrade>
-  constructor({rarity=1, tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']})
+  constructor({rarity=1, events_ids=[],tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'],events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']})
   update(): Promise<void>
   refetch(): Promise<void>
   toJSON(): {
     rarity: number;
     tags_ids: number[];
+    events_ids: number[]
     upgrades: Upgrade[];
     name: string;
   }
@@ -50,10 +51,12 @@ export const useCardStore = defineStore('card', () => {
     readonly name: string
     readonly rarity: number
     _tags: Array<number>
+    _events: Array<number>
     _upgrades: Array<Upgrade>
-    constructor({rarity=1, tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
+    constructor({rarity=1, events_ids=[], tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
       this.rarity = rarity
       this._tags = tags_ids
+      this._events = events_ids
       this._upgrades = upgrades
       this.name = name
     }
@@ -65,6 +68,15 @@ export const useCardStore = defineStore('card', () => {
 
     public get tags() : Array<number> {
       return this._tags
+    }
+
+    public set events(v : Array<number>) {
+      this._events = v;
+      this.update()
+    }
+
+    public get events() : Array<number> {
+      return this._events
     }
 
     public set upgrades(v : Array<Upgrade>) {
@@ -104,6 +116,7 @@ export const useCardStore = defineStore('card', () => {
       return {
         rarity: this.rarity,
         tags_ids: this.tags,
+        events_ids: this.events,
         upgrades: this.upgrades,
         name: this.name
       }
@@ -151,6 +164,7 @@ export const useCardStore = defineStore('card', () => {
       body: JSON.stringify({
         rarity,
         tags_ids: [],
+        events_ids: [],
         upgrades: [],
         name: name  })
     })
@@ -251,31 +265,30 @@ export const useCardStore = defineStore('card', () => {
         default: isdefault,
         name,
         start_time,
-        end_time,
-        cards_names: []
+        end_time
       }
     }
   }
 
-  async function assignEvents(card_id: string, _events: Array<number>) {
-    const result = await fetch(`${apiPath}/events/${card_id}/events`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(_events)
-    })
-    if (result.ok) {
-      Object.keys(events.value).forEach((event_id) => {
-        const event = events.value[Number(event_id)]
-        event.cards = event.cards.filter((c) => c != card_id)
-      })
+  // async function assignEvents(card_id: string, _events: Array<number>) {
+  //   const result = await fetch(`${apiPath}/events/${card_id}/events`, {
+  //     method: 'PUT',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(_events)
+  //   })
+  //   if (result.ok) {
+  //     Object.keys(events.value).forEach((event_id) => {
+  //       const event = events.value[Number(event_id)]
+  //       event.cards = event.cards.filter((c) => c != card_id)
+  //     })
 
-      _events.forEach((e) => {
-        events.value[e].cards.push(card_id)
-      })
-    }
-  }
+  //     _events.forEach((e) => {
+  //       events.value[e].cards.push(card_id)
+  //     })
+  //   }
+  // }
 
   async function deleteEvent(id: number) {
     const req = await fetch(`${apiPath}/events/${id}`, {

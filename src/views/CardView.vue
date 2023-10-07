@@ -20,11 +20,8 @@ const card = computed(()=>{
 
 const events = computed<number[]>({
   get() {
-    const card_name = card.value?.name
-    if(card_name !== undefined){
-      return Object.entries(store.events)
-      .filter(([, value]) => value.cards_names.includes(card_name))
-      .map((e) => Number(e[0]))
+    if(card.value !== undefined){
+      return card.value._events
     }
     return []
   },
@@ -68,7 +65,7 @@ function previousCard() {
   <main id="card-view">
     <div id="filters">
       <TagMultiselect v-if="card" v-model="card.tags"></TagMultiselect>
-      <EventMultiselect v-model="events"></EventMultiselect>
+      <EventMultiselect v-if="card" v-model="card.events"></EventMultiselect>
     </div>
 
     <div id="controls">

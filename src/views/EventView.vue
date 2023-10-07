@@ -61,7 +61,7 @@ function deleteEvent(id: number) {
         disabled="true"
       />
       <input type="checkbox" :checked="event.default" disabled="true" />
-      <span>{{ event.cards_names.length }}</span>
+      <span>{{ Object.values(store.cards).reduce((acc, c)=>c._events.includes(event.id!) ? acc+1:  acc, 0) }}</span>
       <button @click="deleteEvent(id)">X</button>
     </div>
   </main>
