@@ -290,7 +290,6 @@ export const useCardStore = defineStore('card', () => {
   }
 
   return {
-    apiPath,
     cards,
     tags,
     events,

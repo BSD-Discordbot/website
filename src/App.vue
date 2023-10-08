@@ -2,6 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 
 import { useCardStore } from '@/stores/cards'
+import {useUserStore} from '@/stores/user'
 
 const store = useCardStore()
 store.fetchCards()
@@ -9,6 +10,12 @@ store.fetchTags()
 // store.fetchUpgrades()
 store.fetchEvents()
 
+const userStore = useUserStore()
+userStore.fetchUser()
+
+function login(){
+  window.location.href = "https://discord.com/api/oauth2/authorize?client_id=460020057867681792&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Flogin&response_type=code&scope=identify"
+}
 </script>
 
 <template>
@@ -23,6 +30,12 @@ store.fetchEvents()
         <RouterLink to="/upgrades">Upgrades</RouterLink>
       </nav>
     </div>
+    <button v-if="userStore.user === undefined" @click="login">login</button>
+    <div class="avatar">
+      <img v-if="userStore.user !== undefined" :src="userStore.user.avatar_url"/>
+      <span>{{ userStore.user?.global_name }}</span>
+    </div>
+    
   </header>
 
   <RouterView />
@@ -41,6 +54,17 @@ header {
   margin: 0 auto 2rem;
 }
 
+.avatar, .avatar *{
+  align-items: center;
+  display:flex;
+  flex-direction: row;
+  max-height: 40px;
+  margin-left: 10px;
+}
+
+.avatar img{
+  border-radius: 50%;
+}
 nav {
   width: 100%;
   font-size: 12px;
