@@ -1,4 +1,4 @@
-import { ref, watch, type Ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 
@@ -8,9 +8,49 @@ export type Tag = {
   name: string
 }
 
-export type Upgrade = {
-  requirement: string
+export type UpgradeBase = {
+  requirement_name: string
   amount: number
+}
+
+
+export class Upgrade implements UpgradeBase {
+  _requirement_name: string
+  _amount: number
+  parentCard: Card
+  constructor(parentCard: Card, {requirement_name, amount}: {requirement_name: Upgrade['_requirement_name'], amount: Upgrade['_amount']}){
+    this._requirement_name = requirement_name
+    this._amount = amount
+    this.parentCard = parentCard
+  }
+
+  
+  public set requirement_name(v : string) {
+    this._requirement_name = v;
+    this.parentCard.update()
+  }
+
+  
+  public get requirement_name() : string {
+    return this._requirement_name 
+  }
+
+  
+  public set amount(v : number) {
+    this._amount = v;
+    this.parentCard.update()
+  }
+
+  public get amount() : number {
+    return this._amount
+  }
+  
+  toJSON(){
+    return {
+      requirement_name: this._requirement_name,
+      amount: this._amount
+    }
+  }
 }
 
 export type Event = {
@@ -27,7 +67,7 @@ export declare class Card{
   tags: Array<number>
   events: Array<number>
   upgrades: Array<Upgrade>
-  constructor({rarity=1, events_ids=[],tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'],events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']})
+  constructor({rarity=1, events_ids=[],tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'],events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Array<UpgradeBase>, name: Card['name']})
   update(): Promise<void>
   refetch(): Promise<void>
   toJSON(): {
@@ -39,10 +79,6 @@ export declare class Card{
   }
 }
 
-
-
-// export type Upgrade = Record<string, string>
-
 export const useCardStore = defineStore('card', () => {
 
   const apiPath = import.meta.env.VITE_API_PATH
@@ -53,11 +89,11 @@ export const useCardStore = defineStore('card', () => {
     _tags: Array<number>
     _events: Array<number>
     _upgrades: Array<Upgrade>
-    constructor({rarity=1, events_ids=[], tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Card['upgrades'], name: Card['name']}){
+    constructor({rarity=1, events_ids=[], tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Array<UpgradeBase>, name: Card['name']}){
       this.rarity = rarity
       this._tags = tags_ids
       this._events = events_ids
-      this._upgrades = upgrades
+      this._upgrades = upgrades.map(e=>new Upgrade(this, e))
       this.name = name
     }
     
@@ -208,34 +244,6 @@ export const useCardStore = defineStore('card', () => {
     }
   }
 
-  // async function fetchUpgrades() {
-  //   const data = await fetch(apiPath + '/upgrades')
-  //   const json = await data.json()
-  //   upgrades.value = json
-  // }
-
-  // async function createUpgrade(card: string, requirements: Upgrade) {
-  //   const req = await fetch(`${apiPath}/upgrades/${card}`, {
-  //     method: 'PUT',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify(requirements)
-  //   })
-  //   if (req.ok) {
-  //     upgrades.value[card] = requirements
-  //   }
-  // }
-
-  // async function deleteUpgrade(card: string) {
-  //   const req = await fetch(`${apiPath}/upgrades/${card}`, {
-  //     method: 'DELETE'
-  //   })
-  //   if (req.ok) {
-  //     delete upgrades.value[card]
-  //   }
-  // }
-
   async function fetchEvents() {
     const data = await fetch(apiPath + '/events')
     const json = await data.json()
@@ -270,26 +278,6 @@ export const useCardStore = defineStore('card', () => {
     }
   }
 
-  // async function assignEvents(card_id: string, _events: Array<number>) {
-  //   const result = await fetch(`${apiPath}/events/${card_id}/events`, {
-  //     method: 'PUT',
-  //     headers: {
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify(_events)
-  //   })
-  //   if (result.ok) {
-  //     Object.keys(events.value).forEach((event_id) => {
-  //       const event = events.value[Number(event_id)]
-  //       event.cards = event.cards.filter((c) => c != card_id)
-  //     })
-
-  //     _events.forEach((e) => {
-  //       events.value[e].cards.push(card_id)
-  //     })
-  //   }
-  // }
-
   async function deleteEvent(id: number) {
     const req = await fetch(`${apiPath}/events/${id}`, {
       method: 'DELETE'
@@ -305,7 +293,6 @@ export const useCardStore = defineStore('card', () => {
     apiPath,
     cards,
     tags,
-    // upgrades,
     events,
     getImageURL,
     fetchCards,
@@ -314,13 +301,8 @@ export const useCardStore = defineStore('card', () => {
     fetchTags,
     createTag,
     deleteTag,
-    // assignTags,
-    // fetchUpgrades,
-    // createUpgrade,
-    // deleteUpgrade,
     fetchEvents,
     createEvent,
-    // assignEvents,
     deleteEvent
   }
 })

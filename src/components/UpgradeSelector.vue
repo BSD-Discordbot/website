@@ -1,80 +1,82 @@
 <script setup lang="ts">
 import CardMultiselect from './CardMultiselect.vue'
-import { useCardStore } from '@/stores/cards'
-import { ref, watchEffect } from 'vue'
+import { Upgrade, useCardStore } from '@/stores/cards'
+import { computed, ref, } from 'vue'
 
 const store = useCardStore()
 
+// those blocks are for the mail image only
 const props = defineProps({
   value: {
-    type: Number,
+    type: String,
     required: false,
     default: undefined
   }
 })
-
-const current = ref<number>()
-const requirements = ref<Record<number, number>>({})
-const disabled = ref<boolean>(false)
-
-watchEffect(() => {
-  current.value = props.value
-  if (props.value !== undefined) {
-    disabled.value = true
-    requirements.value = store.upgrades[props.value]
+// if this variable is not undefined, that means this selector has no main card given by default
+let card_name = ref<string>()
+const value = computed({
+  get() {
+    return props.value ?? card_name.value
+  },
+  set(value) {
+    card_name.value = value
   }
 })
 
-function addRequirement(value: number | undefined) {
-  if (value === undefined) {
+const disabled = computed(() => {
+  return props.value === undefined ? false : true
+})
+
+function addRequirement(card_name: string | undefined){
+  if(value.value !== undefined && card_name !== undefined){
+    const card = store.cards[value.value]
+    if(card.upgrades.find(u => u.requirement_name === card_name)){
+      return
+    }
+    card.upgrades.push(new Upgrade(card, {
+      requirement_name: card_name,
+      amount: 1
+    }))
+    card.update()
+
+    if(card_name !== undefined){
+      value.value = undefined
+    }
+  }
+}
+
+function changeRequirement(upgrade: Upgrade, requirement_name: string | undefined ){
+  if(value.value === undefined){
     return
   }
-  requirements.value[value] = 1
-}
-
-function changeRequirementAmount(e: Event, requirementId: number) {
-  const amount = Number((e.target as HTMLInputElement).value)
-  if (amount <= 0) {
-    return delete requirements.value[requirementId]
-  }
-  requirements.value[requirementId] = amount
-}
-
-function createUpgrade() {
-  if (
-    current.value === undefined ||
-    isNaN(current.value) ||
-    Object.keys(requirements.value).length === 0
-  ) {
-    return
-  }
-  store.createUpgrade(current.value, requirements.value)
-  current.value = undefined
-  requirements.value = {}
-}
-
-function deleteUpgrade() {
-  if (current.value !== undefined) {
-    store.deleteUpgrade(current.value)
+  const card = store.cards[value.value]
+  if(requirement_name === undefined || requirement_name === null){
+    const index = card.upgrades.indexOf(upgrade)
+    if(index > -1){
+      card.upgrades.splice(index, 1)
+    }
+    card.update()
+  }else{
+    upgrade.requirement_name = requirement_name
   }
 }
 </script>
 
 <template>
   <div class="createUpgrade">
-    <CardMultiselect v-model="current" :disabled="disabled"></CardMultiselect>
+    <CardMultiselect v-model="value" :disabled="disabled"></CardMultiselect>
     <span class="upgradeEquals">=</span>
-
-    <div v-for="(amount, id) in requirements" :key="id">
-      <CardMultiselect :model-value="Number(id)"></CardMultiselect>
-      <input type="number" :value="amount" @change="changeRequirementAmount($event, id)" />
+    <div v-if="value !== undefined && value !== null" class="upgradeValues">
+      <div v-for="(upgrade) in store.cards[value].upgrades" :key="upgrade.requirement_name" class="upgradeValues">
+        <div class="upgradeDivContainer">
+          <CardMultiselect :model-value="upgrade.requirement_name" @update:model-value="changeRequirement(upgrade, $event)"></CardMultiselect>
+          <input v-model="upgrade.amount" type="number" />
+        </div>
+        <span class="upgradeEquals">+</span>
+      </div>
+      <CardMultiselect v-if="value !== undefined" @update:model-value="addRequirement"></CardMultiselect>
     </div>
-
-    <CardMultiselect v-if="current !== undefined" @update:model-value="addRequirement"></CardMultiselect>
-    <button :disabled="Object.keys(requirements).length === 0" @click="createUpgrade">Save</button>
-    <button v-if="current !== undefined" :disabled="!(current in store.upgrades)" class="delete" @click="deleteUpgrade">
-      Delete
-    </button>
   </div>
 </template>
 
@@ -87,19 +89,27 @@ function deleteUpgrade() {
   min-height: 145px;
 }
 
-.createUpgrade>span,
-.createUpgrade>button {
+.createUpgrade > span,
+.createUpgrade > button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
+.upgradeDivContainer{
+  max-width: 100px;
+}
+.upgradeValues{
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
 .upgradeEquals {
   width: 50px;
   font-size: 40px;
 }
 
-.createUpgrade>* {
+.createUpgrade > * {
   max-width: 100px;
 }
 
@@ -108,6 +118,6 @@ function deleteUpgrade() {
 }
 
 .delete {
-  margin-left: auto
+  margin-left: auto;
 }
 </style>

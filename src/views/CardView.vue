@@ -10,7 +10,6 @@ const router = useRouter()
 const route = useRoute()
 const store = useCardStore()
 
-
 const card = computed(()=>{
   if(Array.isArray(route.params.id)){
     return undefined
@@ -18,27 +17,16 @@ const card = computed(()=>{
   return store.cards[route.params.id]
 })
 
-const events = computed<number[]>({
-  get() {
-    if(card.value !== undefined){
-      return card.value._events
-    }
-    return []
-  },
-  set(value) {
-    const card_name = card.value?.name
-    if (value !== undefined && card_name !== undefined) {
-      // store.assignEvents(id, value)
-    }
-  }
+const sortedNames = computed(()=>{
+  return Object.keys(store.cards).sort()
 })
 
 function isLastCard(id: string) {
-  return Object.keys(store.cards).indexOf(id) === Object.keys(store.cards).length - 1
+  return sortedNames.value.indexOf(id) === Object.keys(store.cards).length - 1
 }
 
 function isFirstCard(id: string) {
-  return Object.keys(store.cards).indexOf(id) === 0
+  return sortedNames.value.indexOf(id) === 0
 }
 
 function nextCard() {
@@ -46,18 +34,18 @@ function nextCard() {
     return
   }
 
-  const currentCardIndex = Object.keys(store.cards).indexOf(card.value.name)
+  const currentCardIndex = sortedNames.value.indexOf(card.value.name)
 
-  router.push('/card/' + Object.keys(store.cards)[currentCardIndex + 1])
+  router.push('/card/' + sortedNames.value[currentCardIndex + 1])
 }
 
 function previousCard() {
   if (card.value === undefined || isFirstCard(card.value.name)) {
     return
   }
-  const currentCardIndex = Object.keys(store.cards).indexOf(card.value.name)
+  const currentCardIndex = sortedNames.value.indexOf(card.value.name)
 
-  router.push('/card/' + Object.keys(store.cards)[currentCardIndex - 1])
+  router.push('/card/' + sortedNames.value[currentCardIndex - 1])
 }
 </script>
 

@@ -6,12 +6,12 @@ import Multiselect from 'vue-multiselect'
 const store = useCardStore()
 
 const emit = defineEmits<{
-  (event: 'update:modelValue', value: number | undefined): void
+  (event: 'update:modelValue', value: string | undefined): void
 }>()
 
 const props = defineProps({
   modelValue: {
-    type: Number,
+    type: String,
     required: false,
     default:undefined
   },
@@ -36,7 +36,7 @@ const value = computed({
   <Multiselect
     v-model="value"
     :disabled="disabled"
-    :options="Object.keys(store.cards).map((e) => Number(e))"
+    :options="Object.keys(store.cards)"
     placeholder="Select Card" 
   >
     <template #singleLabel="labelProps">
