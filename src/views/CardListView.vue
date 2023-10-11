@@ -4,9 +4,11 @@ import CardUploader from '@/components/CardUploader.vue'
 import TagMultiselect from '@/components/TagMultiselect.vue'
 import EventMultiselect from '@/components/EventMultiselect.vue'
 import { Card, useCardStore } from '@/stores/cards'
-import { ref, type Ref, computed } from 'vue'
+import { ref, computed } from 'vue'
+import { useUserStore } from '@/stores/user'
 
 const store = useCardStore()
+const userStore = useUserStore()
 
 // let cards = ref<typeof store.cards>(store.cards)
 const tags = ref<number[]>([])
@@ -29,17 +31,32 @@ const cards = computed<Array<Card>>(() => {
   }  
   return Object.keys(value).sort().map(e=>value[e])
 })
+
+const cardsByRarity = computed<Array<Array<Card>>>(()=>{
+  const returnValue: Array<Array<Card>> = []
+  cards.value.forEach(c=>{
+    if(returnValue[c.rarity] === undefined){
+      returnValue[c.rarity] = []
+    }
+    returnValue[c.rarity].push(c)
+  })
+  return returnValue
+})
 </script>
 
 <template>
   <main>
     <div id="filters">
-      <TagMultiselect v-model="tags"></TagMultiselect>
+      <TagMultiselect v-if="userStore.adminMode" v-model="tags"></TagMultiselect>
       <EventMultiselect v-model="events" ></EventMultiselect>
     </div>
     
-    <CardUploader></CardUploader>
-    <CardItem v-for="(card, id) in cards" :id="card.name" :key="id" :card="card"> </CardItem>
+    <CardUploader v-if="userStore.adminMode"></CardUploader>
+    <div v-for="(rarityCards, rarity) in cardsByRarity" :key="rarity" class="rarity">
+      <span class="rarityHeader">{{ '★'.repeat(rarity) }}</span>
+      <CardItem v-for="(card, id) in rarityCards" :id="card.name" :key="id"> </CardItem>
+    </div>
+    
   </main>
 </template>
 
@@ -52,6 +69,17 @@ main {
 #filters{
   width:100%;
   display:flex;
+}
+.rarity{
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.rarityHeader{
+  font-size: 500%;
+  width:100%;
+  text-align: center;
 }
 
 </style>

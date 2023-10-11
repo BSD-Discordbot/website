@@ -5,10 +5,12 @@ import EventMultiselect from '@/components/EventMultiselect.vue'
 import { useCardStore } from '@/stores/cards'
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const route = useRoute()
 const store = useCardStore()
+const userStore = useUserStore()
 
 const card = computed(()=>{
   if(Array.isArray(route.params.id)){
@@ -50,10 +52,10 @@ function previousCard() {
 </script>
 
 <template>
-  <main id="card-view">
+  <main>
     <div id="filters">
-      <TagMultiselect v-if="card" v-model="card.tags"></TagMultiselect>
-      <EventMultiselect v-if="card" v-model="card.events"></EventMultiselect>
+      <TagMultiselect v-if="card && userStore.adminMode" v-model="card.tags"></TagMultiselect>
+      <EventMultiselect v-if="card && userStore.adminMode" v-model="card.events"></EventMultiselect>
     </div>
 
     <div id="controls">

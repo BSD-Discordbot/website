@@ -94,6 +94,7 @@ async function uploadFiles(fileList: FileList){
       @click="($refs.input as HTMLInputElement).click()"
     >
       <span class="uploadIcon">📤</span>
+      <span class="uploadText">Upload a card</span>
     </div>
 </template>
 
@@ -106,8 +107,16 @@ async function uploadFiles(fileList: FileList){
   width: 144px;
   height: 230.733px;
   cursor:pointer;
+  border: 1px dotted white;
+  border-radius: 5%;
 }
 .uploadIcon{
   font-size: 100px;
+}
+.uploadText{
+  font-size: 25px;
+  text-align: center;
+  width:100%;
+  display:inline-block;
 }
 </style>

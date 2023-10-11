@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useCardStore } from '@/stores/cards'
+import { useUserStore } from '@/stores/user';
 import { ref } from 'vue'
 
 const store = useCardStore()
+const userStore = useUserStore()
 
 const newEventName = ref<string>('')
 const newEventStart = ref<string>('')
@@ -33,7 +35,7 @@ function deleteEvent(id: number) {
 
 <template>
   <main>
-    <form id="createEvent" @submit.prevent>
+    <form v-if="userStore.adminMode" id="createEvent" @submit.prevent>
       <input v-model="newEventName" placeholder="event name" />
       <input v-model="newEventStart" type="datetime-local" />
       <input v-model="newEventEnd" type="datetime-local" />

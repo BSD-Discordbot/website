@@ -1,24 +1,23 @@
 <script setup lang="ts">
-import { Card, useCardStore } from '@/stores/cards'
+import { useCardStore } from '@/stores/cards'
+import { useUserStore } from '@/stores/user';
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const store = useCardStore()
+const userStore = useUserStore()
 
 const props = defineProps<{
   id: string
-  card: Card
 }>()
 
-const imgURL = ref('')
+// eslint-disable-next-line vue/no-setup-props-destructure
+const imgURL = ref(store.getImageURL(props.id))
 
 let hovered = ref(false)
 let dragHovered = ref(false)
 
-if (props.card !== undefined) {
-  imgURL.value = store.getImageURL(props.id)
-}
 
 watch(
   () => props.id,
@@ -28,28 +27,34 @@ watch(
 )
 
 function dragover(e: DragEvent) {
+  if(!userStore.adminMode) return
   if (e.dataTransfer?.items[0].type === 'image/png') {
     e.preventDefault()
   }
 }
 
 function mouseenter() {
+  if(!userStore.adminMode) return
   hovered.value = true
 }
 
 function mouseleave() {
+  if(!userStore.adminMode) return
   hovered.value = false
 }
 
 function dragenter() {
+  if(!userStore.adminMode) return
   dragHovered.value = true
 }
 
 function dragleave() {
+  if(!userStore.adminMode) return
   dragHovered.value = false
 }
 
 async function drop(e: DragEvent) {
+  if(!userStore.adminMode) return
   dragHovered.value = false
   if (!e.dataTransfer) {
     return
@@ -92,6 +97,7 @@ function click(){
   cursor: pointer;
   display:flex;
   justify-content: center;
+  margin:20px;
 }
 
 .card * {

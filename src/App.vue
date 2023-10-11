@@ -25,13 +25,13 @@ function login(){
     <div class="wrapper">
       <nav>
         <RouterLink to="/cards">Cards</RouterLink>
-        <RouterLink to="/tags">Tags</RouterLink>
+        <RouterLink v-if="userStore.adminMode" to="/tags">Tags</RouterLink>
         <RouterLink to="/events">Events</RouterLink>
         <RouterLink to="/upgrades">Upgrades</RouterLink>
       </nav>
     </div>
     <button v-if="userStore.user === undefined" @click="login">login</button>
-    <div class="avatar">
+    <div class="avatar" @click="$router.push(`/user/${userStore.user?.id}`)">
       <img v-if="userStore.user !== undefined" :src="userStore.user.avatar_url"/>
       <span>{{ userStore.user?.global_name }}</span>
     </div>

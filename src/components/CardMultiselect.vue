@@ -36,7 +36,7 @@ const value = computed({
   <Multiselect
     v-model="value"
     :disabled="disabled"
-    :options="Object.keys(store.cards)"
+    :options="Object.keys(store.cards).sort()"
     placeholder="Select Card" 
   >
     <template #singleLabel="labelProps">

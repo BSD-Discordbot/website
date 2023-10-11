@@ -5,16 +5,19 @@ export interface UserBase {
   id: string
   global_name: string
   avatar: string
+  isAdmin: boolean
 }
 
 export class User implements UserBase {
   id: string
   global_name: string
   avatar: string
+  isAdmin: boolean
   constructor(data: UserBase){
     this.id = data.id
     this.global_name = data.global_name
     this.avatar = data.avatar
+    this.isAdmin = data.isAdmin
   }
 
   
@@ -28,6 +31,7 @@ export const useUserStore = defineStore('user', () => {
   const apiPath = import.meta.env.VITE_API_PATH
 
   const user = ref<User>()
+  const adminMode = ref<boolean>(false)
   async function fetchUser(){
     const response = await fetch(`${apiPath}/me`, {
       method: 'GET',
@@ -40,6 +44,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     user,
+    adminMode,
     fetchUser
   }
 })
