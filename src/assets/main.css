@@ -4,7 +4,6 @@
   /* max-width: 1280px;
   margin: 0 auto;
   padding: 2rem; */
-
   font-weight: normal;
 }
 
@@ -21,9 +20,26 @@ a,
   }
 }
 
+#app {
+  height:100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content 1fr;
+  padding: 0 2rem;
+  grid-template-areas: 
+    "header"
+    "main"
+  ;
+}
+
+main{
+  grid-area: main;
+  align-content: flex-start;
+  padding-top: 1em;
+}
+
 @media (min-width: 1024px) {
   body {
-    /* display: flex; */
     place-items: center;
   }
 
@@ -38,10 +54,5 @@ a,
       "main sidebar"
       "footer sidebar"
     ;
-  }
-  main{
-    grid-area: main;
-    align-content: flex-start;
-    padding-top: 1em;
   }
 }

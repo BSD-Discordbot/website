@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import Sidebar from './components/PlayerSidebar.vue';
+import Sidebar from './components/SidebarComponent.vue';
 
 import { useCardStore } from '@/stores/cards'
 import { useUserStore } from '@/stores/user'
@@ -27,11 +27,11 @@ function login(){
         <RouterLink to="/cards">Liste des Cartes</RouterLink>
         <RouterLink to="/upgrades">Upgrades</RouterLink>
         <RouterLink to="/events">Evènements</RouterLink>
+        <RouterLink to="/events">Classement</RouterLink>
         <RouterLink v-if="userStore.adminMode" to="/tags">Tags</RouterLink>
         <RouterLink to="/about">A propos</RouterLink>
         <button v-if="userStore.user === undefined" @click="login">login</button>
       </nav>
-    
   </header>
 
   <RouterView />
@@ -46,6 +46,7 @@ header {
   line-height: 1.5;
   max-height: 100vh;
   margin-top: 1rem;
+  grid-area: nav;
 }
 
 .logo {
@@ -79,6 +80,9 @@ nav a:first-of-type {
   border: 0;
 }
 
+footer {
+  display: none;
+}
 @media (min-width: 1024px) {
   header {
     place-items: center;
@@ -108,6 +112,14 @@ nav a:first-of-type {
   }
   nav a {
     flex:1;
+  }
+  footer {
+    display: inline;
+  }
+}
+@media (max-width: 1024px){
+  header{ 
+    display: none;
   }
 }
 </style>
