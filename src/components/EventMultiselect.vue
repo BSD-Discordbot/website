@@ -35,8 +35,7 @@ const value = computed({
     :custom-label="(event: number) => store.events[event].name"
     placeholder="Select Events" 
     :multiple="true"
-  >
-  </Multiselect>
+    />
 </template>
 
 <style scoped>

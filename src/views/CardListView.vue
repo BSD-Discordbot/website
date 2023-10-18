@@ -47,14 +47,14 @@ const cardsByRarity = computed<Array<Array<Card>>>(()=>{
 <template>
   <main>
     <div id="filters">
-      <TagMultiselect v-if="userStore.adminMode" v-model="tags"></TagMultiselect>
-      <EventMultiselect v-model="events" ></EventMultiselect>
+      <TagMultiselect v-if="userStore.adminMode" v-model="tags" />
+      <EventMultiselect v-model="events" />
     </div>
     
-    <CardUploader v-if="userStore.adminMode"></CardUploader>
+    <CardUploader v-if="userStore.adminMode" />
     <div v-for="(rarityCards, rarity) in cardsByRarity" :key="rarity" class="rarity">
       <span class="rarityHeader">{{ '★'.repeat(rarity) }}</span>
-      <CardItem v-for="(card, id) in rarityCards" :id="card.name" :key="id"> </CardItem>
+      <CardItem v-for="(card, id) in rarityCards" :id="card.name" :key="id" />
     </div>
     
   </main>
@@ -69,6 +69,9 @@ main {
 #filters{
   width:100%;
   display:flex;
+  z-index: 2;
+  position:sticky;
+  top:0px;
 }
 .rarity{
   display:flex;
@@ -79,7 +82,12 @@ main {
 .rarityHeader{
   font-size: 500%;
   width:100%;
+  height:1em;
   text-align: center;
+  position:sticky;
+  top:44.4px;
+  z-index: 1;
+  background: var(--color-background);
 }
 
 </style>

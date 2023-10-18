@@ -3,8 +3,8 @@
 </script>
 
 <template>
-  <main>
-    This is the main view
+  <main >
+    This is an about view
   </main>
 </template>
 

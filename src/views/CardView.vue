@@ -54,8 +54,8 @@ function previousCard() {
 <template>
   <main>
     <div id="filters">
-      <TagMultiselect v-if="card && userStore.adminMode" v-model="card.tags"></TagMultiselect>
-      <EventMultiselect v-if="card && userStore.adminMode" v-model="card.events"></EventMultiselect>
+      <TagMultiselect v-if="card && userStore.adminMode" v-model="card.tags" />
+      <EventMultiselect v-if="card && userStore.adminMode" v-model="card.events" />
     </div>
 
     <div id="controls">
@@ -66,8 +66,7 @@ function previousCard() {
         &#8594;
       </button>
     </div>
-    <CardItem v-if="card !== undefined && card !== undefined" :id="card.name" :card="card">
-    </CardItem>
+    <CardItem v-if="card !== undefined && card !== undefined" :id="card.name" :card="card" />
   </main>
 </template>
 

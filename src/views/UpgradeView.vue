@@ -13,11 +13,11 @@ const cardUpgrades = computed<Array<Card>>(()=>{
 
 <template>
   <main v-if="userStore.adminMode">
-    <UpgradeSelector></UpgradeSelector>
-    <UpgradeSelector v-for="(card) in cardUpgrades" :key="card.name" :value="card.name"></UpgradeSelector>
+    <UpgradeSelector />
+    <UpgradeSelector v-for="(card) in cardUpgrades" :key="card.name" :value="card.name" />
   </main>
   <main v-if="!userStore.adminMode">
-    <UpgradeItem v-for="(card) in cardUpgrades" :key="card.name" :value="card.name"></UpgradeItem>
+    <UpgradeItem v-for="(card) in cardUpgrades" :key="card.name" :value="card.name" />
   </main>
 </template>
 

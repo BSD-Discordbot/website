@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import Sidebar from './components/PlayerSidebar.vue';
 
 import { useCardStore } from '@/stores/cards'
-import {useUserStore} from '@/stores/user'
+import { useUserStore } from '@/stores/user'
 
 const store = useCardStore()
 store.fetchCards()
@@ -20,25 +21,22 @@ function login(){
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="25" height="25" />
-
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/cards">Cards</RouterLink>
-        <RouterLink v-if="userStore.adminMode" to="/tags">Tags</RouterLink>
-        <RouterLink to="/events">Events</RouterLink>
+    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="25" height="25" /> -->
+      <nav class="wrapper">
+        <RouterLink to="/">Accueil</RouterLink>
+        <RouterLink to="/cards">Liste des Cartes</RouterLink>
         <RouterLink to="/upgrades">Upgrades</RouterLink>
+        <RouterLink to="/events">Evènements</RouterLink>
+        <RouterLink v-if="userStore.adminMode" to="/tags">Tags</RouterLink>
+        <RouterLink to="/about">A propos</RouterLink>
+        <button v-if="userStore.user === undefined" @click="login">login</button>
       </nav>
-    </div>
-    <button v-if="userStore.user === undefined" @click="login">login</button>
-    <div class="avatar" @click="$router.push(`/user/${userStore.user?.id}`)">
-      <img v-if="userStore.user !== undefined" :src="userStore.user.avatar_url"/>
-      <span>{{ userStore.user?.global_name }}</span>
-    </div>
     
   </header>
 
   <RouterView />
+  <Sidebar />
+  <footer>Footer</footer>
 </template>
 
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
@@ -54,17 +52,7 @@ header {
   margin: 0 auto 2rem;
 }
 
-.avatar, .avatar *{
-  align-items: center;
-  display:flex;
-  flex-direction: row;
-  max-height: 40px;
-  margin-left: 10px;
-}
 
-.avatar img{
-  border-radius: 50%;
-}
 nav {
   width: 100%;
   font-size: 12px;
@@ -92,29 +80,33 @@ nav a:first-of-type {
 
 @media (min-width: 1024px) {
   header {
-    display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    /* padding-right: calc(var(--section-gap) / 2); */
   }
 
   .logo {
     margin: 0 2rem 0 0;
   }
 
-  header .wrapper {
+  header, .wrapper {
     display: flex;
-    place-items: flex-start;
     flex-wrap: wrap;
     width:100%;
+    grid-area: header;
+    align-content: flex-start;
+    justify-content: space-evenly;
   }
 
   nav {
     text-align: left;
     margin-left: -1rem;
     font-size: 1rem;
-
+    align-items: stretch;
     padding: 1rem 0;
     margin-top: 1rem;
+  }
+  nav a {
+    flex:1;
   }
 }
 </style>

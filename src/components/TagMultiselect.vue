@@ -47,7 +47,7 @@ async function createTag(tag: string){
     :taggable="true"
     placeholder="Select Tags"
     @tag="createTag"
-  ></Multiselect>
+    />
 </template>
 
 <style scoped></style>

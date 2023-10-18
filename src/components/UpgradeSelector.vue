@@ -65,17 +65,17 @@ function changeRequirement(upgrade: Upgrade, requirement_name: string | undefine
 
 <template>
   <div class="createUpgrade">
-    <CardMultiselect v-model="value" :disabled="disabled"></CardMultiselect>
+    <CardMultiselect v-model="value" :disabled="disabled" />
     <span class="upgradeEquals">=</span>
     <div v-if="value !== undefined && value !== null" class="upgradeValues">
       <div v-for="(upgrade) in store.cards[value].upgrades" :key="upgrade.requirement_name" class="upgradeValues">
         <div class="upgradeDivContainer">
-          <CardMultiselect :model-value="upgrade.requirement_name" @update:model-value="changeRequirement(upgrade, $event)"></CardMultiselect>
+          <CardMultiselect :model-value="upgrade.requirement_name" @update:model-value="changeRequirement(upgrade, $event)" />
           <input v-model="upgrade.amount" type="number" />
         </div>
         <span class="upgradeEquals">+</span>
       </div>
-      <CardMultiselect v-if="value !== undefined" @update:model-value="addRequirement"></CardMultiselect>
+      <CardMultiselect v-if="value !== undefined" @update:model-value="addRequirement" />
     </div>
   </div>
 </template>
