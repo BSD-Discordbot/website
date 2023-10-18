@@ -65,13 +65,16 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  padding-top: 0;
 }
 #filters{
+  padding-top: 1em;
   width:100%;
   display:flex;
   z-index: 2;
   position:sticky;
-  top:0px;
+  top:0;
+  background: var(--color-background)
 }
 .rarity{
   display:flex;
@@ -85,7 +88,7 @@ main {
   height:1em;
   text-align: center;
   position:sticky;
-  top:44.4px;
+  top: 55px;
   z-index: 1;
   background: var(--color-background);
 }

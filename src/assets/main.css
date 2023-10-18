@@ -42,5 +42,6 @@ a,
   main{
     grid-area: main;
     align-content: flex-start;
+    padding-top: 1em;
   }
 }

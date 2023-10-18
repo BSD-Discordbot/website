@@ -21,7 +21,7 @@ function login(){
 
 <template>
   <header>
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="25" height="25" /> -->
+    <img alt="BSD Logo" class="logo" src="@/assets/logo.svg" />
       <nav class="wrapper">
         <RouterLink to="/">Accueil</RouterLink>
         <RouterLink to="/cards">Liste des Cartes</RouterLink>
@@ -45,10 +45,12 @@ function login(){
 header {
   line-height: 1.5;
   max-height: 100vh;
+  margin-top: 1rem;
 }
 
 .logo {
   display: block;
+  height: 5em;
   margin: 0 auto 2rem;
 }
 
@@ -57,7 +59,6 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-top: 2rem;
 }
 
 nav a.router-link-exact-active {
@@ -102,8 +103,8 @@ nav a:first-of-type {
     margin-left: -1rem;
     font-size: 1rem;
     align-items: stretch;
-    padding: 1rem 0;
-    margin-top: 1rem;
+    padding-top: 1rem;
+    /* margin-top: 1rem; */
   }
   nav a {
     flex:1;

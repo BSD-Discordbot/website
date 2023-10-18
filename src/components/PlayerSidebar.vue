@@ -24,13 +24,13 @@ const userStore = useUserStore()
  	text-align: left;
 	margin-left: 1rem;
 	font-size: 1rem;
-	padding: 1rem 0;
+	padding: 5rem 0;
   grid-area: sidebar;
 }
 
 #sidebarContent{
   position:sticky;
-  top:0;
+  top:1em;
 }
 #sidebarContent > * {
   margin-top: 1rem;
