@@ -25,6 +25,8 @@ const cardUpgrades = computed<Array<Card>>(()=>{
 main {
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
+  font-size: xxx-large;
 }
 </style>

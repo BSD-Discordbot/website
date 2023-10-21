@@ -83,7 +83,7 @@ function changeRequirement(upgrade: Upgrade, requirement_name: string | undefine
 <style scoped>
 .createUpgrade {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   border-bottom: 1px solid var(--color-text);
   width: 100%;
   min-height: 145px;

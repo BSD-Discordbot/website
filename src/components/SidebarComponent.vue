@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
 const userStore = useUserStore()
+
+function login(){
+  window.location.href = "https://discord.com/api/oauth2/authorize?client_id=460020057867681792&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Flogin&response_type=code&scope=identify"
+}
 </script>
 
 <template>
   <div id="sidebar" class="">
     <div id="sidebarContent">
+      <button v-if="userStore.user === undefined" @click="login">login</button>
       <div class="avatar" @click="$router.push(`/user/${userStore.user?.id}`)">
       <img v-if="userStore.user !== undefined" :src="userStore.user.avatar_url" />
       <span>{{ userStore.user?.global_name }}</span>

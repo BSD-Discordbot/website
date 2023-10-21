@@ -13,10 +13,6 @@ store.fetchEvents()
 
 const userStore = useUserStore()
 userStore.fetchUser()
-
-function login(){
-  window.location.href = "https://discord.com/api/oauth2/authorize?client_id=460020057867681792&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Flogin&response_type=code&scope=identify"
-}
 </script>
 
 <template>
@@ -27,10 +23,9 @@ function login(){
         <RouterLink to="/cards">Liste des Cartes</RouterLink>
         <RouterLink to="/upgrades">Upgrades</RouterLink>
         <RouterLink to="/events">Evènements</RouterLink>
-        <RouterLink to="/events">Classement</RouterLink>
+        <RouterLink to="/ranking">Classement</RouterLink>
         <RouterLink v-if="userStore.adminMode" to="/tags">Tags</RouterLink>
         <RouterLink to="/about">A propos</RouterLink>
-        <button v-if="userStore.user === undefined" @click="login">login</button>
       </nav>
   </header>
 
