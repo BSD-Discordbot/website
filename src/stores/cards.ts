@@ -207,28 +207,31 @@ export const useCardStore = defineStore('card', () => {
         `/src/assets/cartes_${card.rarity}etoile.png`
       ])
     )
-    console.log("a")
     const atlas = await fetch(apiPath + '/atlas')
-    console.log(atlas.ok)
-    const b = await atlas.blob()
-    const atlasBitmap = await createImageBitmap(b)
-    console.log("c")
-    if ((atlasBitmap.width / Object.keys(mapping).length) % 1 != 0) {
-      throw new Error('Invalid bitmap width')
+    const atlasBitmap = await createImageBitmap(await atlas.blob())
+    
+
+    const cardHeight = 450//atlasBitmap.height
+    const cardWidth = 288//atlasBitmap.width / Object.keys(mapping).length
+
+    if ((atlasBitmap.width / cardWidth % 1) != 0 || (atlasBitmap.height / cardHeight %1) != 0) {
+      throw new Error('Invalid atlas dimensions')
     }
-    console.log("d")
-    const cardHeight = atlasBitmap.height
-    const cardWidth = atlasBitmap.width / Object.keys(mapping).length
+    function indexToCoordinates(index: number){
+      const nmbWidth = atlasBitmap.width / cardWidth
+      return {x:index%nmbWidth, y:Math.floor(index/nmbWidth)}
+    }
     const canvas = new OffscreenCanvas(cardWidth, cardHeight)
     // const context = canvas.getContext('bitmaprenderer')
     const context = canvas.getContext('2d')
     console.log("y")
     await Promise.all(
       Object.values(cards.value).sort((a,b)=>a.name.localeCompare(b.name)).map(async (card, index) => {
+        const coords = indexToCoordinates(index)
         const bitmap = await createImageBitmap(
           atlasBitmap,
-          cardWidth * index,
-          0,
+          coords.x*cardWidth,
+          coords.y*cardHeight,
           cardWidth,
           cardHeight
         )
