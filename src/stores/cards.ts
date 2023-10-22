@@ -1,7 +1,5 @@
-import { ref } from 'vue'
+import { ref, unref, type Ref, triggerRef } from 'vue'
 import { defineStore } from 'pinia'
-
-
 
 export type Tag = {
   id: number
@@ -13,39 +11,41 @@ export type UpgradeBase = {
   amount: number
 }
 
-
 export class Upgrade implements UpgradeBase {
   _requirement_name: string
   _amount: number
   parentCard: Card
-  constructor(parentCard: Card, {requirement_name, amount}: {requirement_name: Upgrade['_requirement_name'], amount: Upgrade['_amount']}){
+  constructor(
+    parentCard: Card,
+    {
+      requirement_name,
+      amount
+    }: { requirement_name: Upgrade['_requirement_name']; amount: Upgrade['_amount'] }
+  ) {
     this._requirement_name = requirement_name
     this._amount = amount
     this.parentCard = parentCard
   }
 
-  
-  public set requirement_name(v : string) {
-    this._requirement_name = v;
+  public set requirement_name(v: string) {
+    this._requirement_name = v
     this.parentCard.update()
   }
 
-  
-  public get requirement_name() : string {
-    return this._requirement_name 
+  public get requirement_name(): string {
+    return this._requirement_name
   }
 
-  
-  public set amount(v : number) {
-    this._amount = v;
+  public set amount(v: number) {
+    this._amount = v
     this.parentCard.update()
   }
 
-  public get amount() : number {
+  public get amount(): number {
     return this._amount
   }
-  
-  toJSON(){
+
+  toJSON() {
     return {
       requirement_name: this._requirement_name,
       amount: this._amount
@@ -61,26 +61,37 @@ export type Event = {
   name: string
 }
 
-export declare class Card{
+export declare class Card {
   readonly name: string
   readonly rarity: number
   tags: Array<number>
   events: Array<number>
   upgrades: Array<Upgrade>
-  constructor({rarity=1, events_ids=[],tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'],events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Array<UpgradeBase>, name: Card['name']})
+  constructor({
+    rarity = 1,
+    events_ids = [],
+    tags_ids = [],
+    upgrades = [],
+    name
+  }: {
+    rarity: Card['rarity']
+    events_ids: Card['events']
+    tags_ids: Card['tags']
+    upgrades: Array<UpgradeBase>
+    name: Card['name']
+  })
   update(): Promise<void>
   refetch(): Promise<void>
   toJSON(): {
-    rarity: number;
-    tags_ids: number[];
+    rarity: number
+    tags_ids: number[]
     events_ids: number[]
-    upgrades: Upgrade[];
-    name: string;
+    upgrades: Upgrade[]
+    name: string
   }
 }
 
 export const useCardStore = defineStore('card', () => {
-
   const apiPath = import.meta.env.VITE_API_PATH
 
   class Card implements Card {
@@ -89,42 +100,54 @@ export const useCardStore = defineStore('card', () => {
     _tags: Array<number>
     _events: Array<number>
     _upgrades: Array<Upgrade>
-    constructor({rarity=1, events_ids=[], tags_ids=[], upgrades=[], name}: {rarity: Card['rarity'], events_ids:Card['events'], tags_ids: Card['tags'], upgrades: Array<UpgradeBase>, name: Card['name']}){
+    constructor({
+      rarity = 1,
+      events_ids = [],
+      tags_ids = [],
+      upgrades = [],
+      name
+    }: {
+      rarity: Card['rarity']
+      events_ids: Card['events']
+      tags_ids: Card['tags']
+      upgrades: Array<UpgradeBase>
+      name: Card['name']
+    }) {
       this.rarity = rarity
       this._tags = tags_ids
       this._events = events_ids
-      this._upgrades = upgrades.map(e=>new Upgrade(this, e))
+      this._upgrades = upgrades.map((e) => new Upgrade(this, e))
       this.name = name
     }
-    
-    public set tags(v : Array<number>) {
-      this._tags = v;
+
+    public set tags(v: Array<number>) {
+      this._tags = v
       this.update()
     }
 
-    public get tags() : Array<number> {
+    public get tags(): Array<number> {
       return this._tags
     }
 
-    public set events(v : Array<number>) {
-      this._events = v;
+    public set events(v: Array<number>) {
+      this._events = v
       this.update()
     }
 
-    public get events() : Array<number> {
+    public get events(): Array<number> {
       return this._events
     }
 
-    public set upgrades(v : Array<Upgrade>) {
-      this._upgrades = v;
+    public set upgrades(v: Array<Upgrade>) {
+      this._upgrades = v
       this.update()
     }
 
-    public get upgrades() : Array<Upgrade> {
+    public get upgrades(): Array<Upgrade> {
       return this._upgrades
     }
-    
-    public async update(){
+
+    public async update() {
       const response = await fetch(`${apiPath}/cards/${this.name}`, {
         method: 'PUT',
         headers: {
@@ -132,23 +155,23 @@ export const useCardStore = defineStore('card', () => {
         },
         body: JSON.stringify(this)
       })
-      if(!response.ok){
+      if (!response.ok) {
         this.refetch()
-      } 
+      }
     }
 
-    public async refetch(){
+    public async refetch() {
       const card = await fetch(`${apiPath}/cards/${this.name}`, {
-        method: 'GET',
+        method: 'GET'
       })
       delete cards.value[this.name]
-      if(!card.ok){
+      if (!card.ok) {
         throw new Error(`Couldn't fetch card ${this.name}`)
       }
       cards.value[this.name] = new Card(await card.json())
     }
 
-    public toJSON(){
+    public toJSON() {
       return {
         rarity: this.rarity,
         tags_ids: this.tags,
@@ -163,35 +186,77 @@ export const useCardStore = defineStore('card', () => {
   const tags = ref<Record<number, Tag>>({})
   // const upgrades = ref<Record<number, Upgrade>>({})
   const events = ref<Record<number, Event>>({})
+  const images = ref<Record<string, string>>({})
   // const doubleCount = computed(() => count.value * 2)
 
-  function getImageURL(card: string) {
-    return `${apiPath}/cards/${card}/image`
-  }
   async function fetchCards() {
     const data = await fetch(apiPath + '/cards')
     const json = await data.json()
-    if(!Array.isArray(json)){
+    if (!Array.isArray(json)) {
       throw new Error(`Couldn't parse cards at ${apiPath}/cards`)
     }
     const mapping = {} as Record<string, Card>
-    json.forEach(c => { 
+    json.forEach((c) => {
       mapping[c.name] = new Card(c)
     })
 
     cards.value = mapping
+    images.value = Object.fromEntries(
+      Object.entries(cards.value).map(([n, card]) => [
+        n,
+        `/src/assets/cartes_${card.rarity}etoile.png`
+      ])
+    )
+    console.log("a")
+    const atlas = await fetch(apiPath + '/atlas')
+    console.log(atlas.ok)
+    const b = await atlas.blob()
+    const atlasBitmap = await createImageBitmap(b)
+    console.log("c")
+    if ((atlasBitmap.width / Object.keys(mapping).length) % 1 != 0) {
+      throw new Error('Invalid bitmap width')
+    }
+    console.log("d")
+    const cardHeight = atlasBitmap.height
+    const cardWidth = atlasBitmap.width / Object.keys(mapping).length
+    const canvas = new OffscreenCanvas(cardWidth, cardHeight)
+    // const context = canvas.getContext('bitmaprenderer')
+    const context = canvas.getContext('2d')
+    console.log("y")
+    await Promise.all(
+      Object.values(cards.value).sort((a,b)=>a.name.localeCompare(b.name)).map(async (card, index) => {
+        const bitmap = await createImageBitmap(
+          atlasBitmap,
+          cardWidth * index,
+          0,
+          cardWidth,
+          cardHeight
+        )
+        context?.drawImage(bitmap, 0, 0)
+        // context?.transferFromImageBitmap(bitmap)
+        bitmap.close()
+        return { url: URL.createObjectURL(await canvas.convertToBlob()), card }
+      })
+    ).then((e) => {
+      e.forEach(({ url, card }) => {
+        images.value[card.name] = url
+      })
+    })
+    triggerRef(images)
+    atlasBitmap.close()
+    console.log("z")
   }
 
   async function uploadImage(file: File, card: string) {
     const formData = new FormData()
     formData.append('file', file)
-    return await fetch(getImageURL(card), {
+    return await fetch(`${apiPath}/cards/${card}/image`, {
       method: 'PUT',
       body: formData
     })
   }
 
-  async function createCard(name:string, rarity:number) {
+  async function createCard(name: string, rarity: number) {
     return await fetch(`${apiPath}/cards/${name}`, {
       method: 'PUT',
       headers: {
@@ -202,7 +267,8 @@ export const useCardStore = defineStore('card', () => {
         tags_ids: [],
         events_ids: [],
         upgrades: [],
-        name: name  })
+        name: name
+      })
     })
   }
 
@@ -211,7 +277,7 @@ export const useCardStore = defineStore('card', () => {
     const json = await data.json()
 
     const mapping = {} as Record<string, Tag>
-    json.forEach((t: Tag) => { 
+    json.forEach((t: Tag) => {
       mapping[t.id] = t
     })
     tags.value = mapping
@@ -248,7 +314,7 @@ export const useCardStore = defineStore('card', () => {
     const data = await fetch(apiPath + '/events')
     const json = await data.json()
     const mapping = {} as Record<string, Event>
-    json.forEach((t: Event) => { 
+    json.forEach((t: Event) => {
       mapping[t.id!] = t
     })
     events.value = mapping
@@ -293,7 +359,7 @@ export const useCardStore = defineStore('card', () => {
     cards,
     tags,
     events,
-    getImageURL,
+    images,
     fetchCards,
     uploadImage,
     createCard,

@@ -40,7 +40,7 @@ const value = computed({
     placeholder="Select Card" 
   >
     <template #singleLabel="labelProps">
-      <img class="option__image" :src="store.getImageURL(labelProps.option)" />
+      <img class="option__image" :src="store.images[labelProps.option]" />
       <span class="option__desc">
         <span class="option__title">
           {{ labelProps.option }}
@@ -48,7 +48,7 @@ const value = computed({
       </span>
     </template>
     <template #option="optionProp">
-      <img class="option__image" :src="store.getImageURL(optionProp.option)" />
+      <img class="option__image" :src="store.images[optionProp.option]" />
       <div class="option__desc">
         <span class="option__title">
           {{ optionProp.option }}

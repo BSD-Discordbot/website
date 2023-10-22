@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCardStore } from '@/stores/cards'
 import { useUserStore } from '@/stores/user';
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
@@ -13,18 +13,13 @@ const props = defineProps<{
 }>()
 
 // eslint-disable-next-line vue/no-setup-props-destructure
-const imgURL = ref(store.getImageURL(props.id))
+const imgURL = computed(()=>{
+  return store.images[props.id]
+})
+
 
 let hovered = ref(false)
 let dragHovered = ref(false)
-
-
-watch(
-  () => props.id,
-  async (newId) => {
-    imgURL.value = store.getImageURL(newId)
-  }
-)
 
 function dragover(e: DragEvent) {
   if(!userStore.adminMode) return
@@ -60,14 +55,14 @@ async function drop(e: DragEvent) {
     return
   }
   const file = e.dataTransfer.files[0]
-  setImage(file)
-  store.uploadImage(file, props.id)
+  // setImage(file)
+  await store.uploadImage(file, props.id)
 }
 
-async function setImage(file: File){
-  if (file === undefined) return
-  imgURL.value = URL.createObjectURL(file)
-}
+// async function setImage(file: File){
+//   if (file === undefined) return
+//   imgURL.value = URL.createObjectURL(file)
+// }
 
 function click(){
   router.push('/card/'+props.id)
