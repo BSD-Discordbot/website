@@ -150,6 +150,7 @@ export const useCardStore = defineStore('card', () => {
     public async update() {
       const response = await fetch(`${apiPath}/cards/${this.name}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -255,6 +256,7 @@ export const useCardStore = defineStore('card', () => {
     formData.append('file', file)
     return await fetch(`${apiPath}/cards/${card}/image`, {
       method: 'PUT',
+      credentials: 'include',
       body: formData
     })
   }
@@ -262,6 +264,7 @@ export const useCardStore = defineStore('card', () => {
   async function createCard(name: string, rarity: number) {
     return await fetch(`${apiPath}/cards/${name}`, {
       method: 'PUT',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -289,6 +292,7 @@ export const useCardStore = defineStore('card', () => {
   async function createTag(name: string) {
     const req = await fetch(`${apiPath}/tags`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -303,7 +307,8 @@ export const useCardStore = defineStore('card', () => {
 
   async function deleteTag(id: number) {
     const req = await fetch(`${apiPath}/tags/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      credentials: 'include'
     })
     if (req.ok) {
       //remove tag
@@ -331,6 +336,7 @@ export const useCardStore = defineStore('card', () => {
   ) {
     const result = await fetch(`${apiPath}/events`, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -349,7 +355,8 @@ export const useCardStore = defineStore('card', () => {
 
   async function deleteEvent(id: number) {
     const req = await fetch(`${apiPath}/events/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      credentials: 'include',
     })
     if (req.ok) {
       delete events.value[id]
