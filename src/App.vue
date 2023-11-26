@@ -12,7 +12,10 @@ store.fetchTags()
 store.fetchEvents()
 
 const userStore = useUserStore()
-userStore.fetchUser()
+userStore.fetchUser().then(()=>{
+  userStore.fetchPlayer()
+})
+
 </script>
 
 <template>

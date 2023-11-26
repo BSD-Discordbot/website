@@ -9,12 +9,12 @@ const store = useCardStore()
 const userStore = useUserStore()
 
 const props = defineProps<{
-  id: string
+  name: string
 }>()
 
 // eslint-disable-next-line vue/no-setup-props-destructure
 const imgURL = computed(()=>{
-  return store.images[props.id]
+  return store.images[props.name]
 })
 
 
@@ -56,7 +56,7 @@ async function drop(e: DragEvent) {
   }
   const file = e.dataTransfer.files[0]
   // setImage(file)
-  await store.uploadImage(file, props.id)
+  await store.uploadImage(file, props.name)
 }
 
 // async function setImage(file: File){
@@ -65,13 +65,13 @@ async function drop(e: DragEvent) {
 // }
 
 function click(){
-  router.push('/card/'+props.id)
+  router.push('/card/'+props.name)
 }
 </script>
 
 <template>
   <div
-    class="card"
+    :class="'card ' + (userStore.player?.card_ownership.find(c=>c.card_name == name) ? 'owned' : '')"
     @mouseenter="mouseenter"
     @mouseleave="mouseleave"
     @dragenter.stop="dragenter"
@@ -80,19 +80,24 @@ function click(){
     @dragover="dragover"
     @click="click"
   >
-    <img :src="imgURL" />
+    <img :src="imgURL"/>
     <div :class="`cardOverlay ${dragHovered ? 'dragHovered' : ''}`">⟳</div>
-    <h1 :class="`cardRarity ${hovered ? 'hovered' : ''}`">{{ '#' + id.toString().padStart(4, '0') }}</h1>
+    <h1 :class="`cardRarity ${hovered ? 'hovered' : ''}`">{{ '#' + name.padStart(4, '0') }}</h1>
   </div>
 </template>
 
 <style scoped>
 .card {
   position: relative;
+  width: 100%;
   cursor: pointer;
   display:flex;
   justify-content: center;
-  margin:20px;
+  filter: grayscale(100%);
+}
+
+.owned {
+  filter:unset;
 }
 
 .card * {
@@ -104,9 +109,7 @@ function click(){
   right:0;
 }
 .card img {
-  height: 100%;
-  width: 144px;
-  object-fit: contain;
+  width: 100%;
 }
 
 .cardOverlay {

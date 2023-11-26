@@ -28,7 +28,7 @@ const cards = computed<Array<Card>>(() => {
     Object.entries(value).filter(([, card]) =>
     events.value.every((event) => card.events.includes(event))
     ))
-  }  
+  }
   return Object.keys(value).sort().map(e=>value[e])
 })
 
@@ -54,7 +54,9 @@ const cardsByRarity = computed<Array<Array<Card>>>(()=>{
     <CardUploader v-if="userStore.adminMode" />
     <div v-for="(rarityCards, rarity) in cardsByRarity" :key="rarity" class="rarity">
       <span class="rarityHeader">{{ '★'.repeat(rarity) }}</span>
-      <CardItem v-for="(card, id) in rarityCards" :id="card.name" :key="id" />
+      <div v-for="(card, id) in rarityCards" :key="id" class="cardContainer"> 
+        <CardItem  :name="card.name" />
+      </div>
     </div>
     
   </main>
@@ -82,6 +84,12 @@ main {
   justify-content: center;
 }
 
+.cardContainer {
+  /* height: 100%; */
+  width: 144px;
+  margin:20px;
+  object-fit: contain;
+}
 .rarityHeader{
   font-size: 500%;
   width:100%;

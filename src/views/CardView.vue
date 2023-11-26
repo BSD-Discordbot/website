@@ -66,7 +66,9 @@ function previousCard() {
         &#8594;
       </button>
     </div>
-    <CardItem v-if="card !== undefined && card !== undefined" :id="card.name" :card="card" />
+    <div class="card">
+      <CardItem v-if="card !== undefined && card !== undefined" :name="card.name" :card="card" />
+    </div>
   </main>
 </template>
 
@@ -83,5 +85,9 @@ main {
 
 #filters {
   display: flex;
+}
+.card{
+  width:288px;
+  margin:auto;
 }
 </style>

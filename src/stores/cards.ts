@@ -64,6 +64,7 @@ export type Event = {
 export declare class Card {
   readonly name: string
   readonly rarity: number
+  readonly id: number
   tags: Array<number>
   events: Array<number>
   upgrades: Array<Upgrade>
@@ -97,22 +98,26 @@ export const useCardStore = defineStore('card', () => {
   class Card implements Card {
     readonly name: string
     readonly rarity: number
+    readonly id: number
     _tags: Array<number>
     _events: Array<number>
     _upgrades: Array<Upgrade>
     constructor({
+      id,
       rarity = 1,
       events_ids = [],
       tags_ids = [],
       upgrades = [],
       name
     }: {
+      id: Card['id']
       rarity: Card['rarity']
       events_ids: Card['events']
       tags_ids: Card['tags']
       upgrades: Array<UpgradeBase>
       name: Card['name']
     }) {
+      this.id = id
       this.rarity = rarity
       this._tags = tags_ids
       this._events = events_ids
