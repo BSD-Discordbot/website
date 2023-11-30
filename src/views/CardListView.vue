@@ -13,36 +13,53 @@ const userStore = useUserStore()
 // let cards = ref<typeof store.cards>(store.cards)
 const tags = ref<number[]>([])
 const events = ref<number[]>([])
-const ratity = ref<number>()
+const rarity = ref<number>()
 
 const cards = computed<Array<Card>>(() => {
   let value = store.cards
   if (tags.value.length !== 0) {
     value = Object.fromEntries(
-    Object.entries(value).filter(([, card]) =>
-    tags.value.every((tag) => card.tags.includes(tag))
-    ))
+      Object.entries(value).filter(([, card]) =>
+        tags.value.every((tag) => card.tags.includes(tag))
+      ))
   }
 
-  if(events.value.length !== 0){
+  if (events.value.length !== 0) {
     value = Object.fromEntries(
-    Object.entries(value).filter(([, card]) =>
-    events.value.every((event) => card.events.includes(event))
-    ))
+      Object.entries(value).filter(([, card]) =>
+        events.value.every((event) => card.events.includes(event))
+      ))
   }
-  return Object.keys(value).sort().map(e=>value[e])
+
+  if (rarity.value != undefined) {
+    value = Object.keys(value).reduce((r, e) => {
+      if (value[e].rarity == rarity.value) {
+        r[e] = value[e]
+      }
+      return r
+    }, {} as Record<string, typeof value[keyof typeof value]>)
+  }
+  return Object.keys(value).sort().map(e => value[e])
 })
 
-const cardsByRarity = computed<Array<Array<Card>>>(()=>{
+const cardsByRarity = computed<Array<Array<Card>>>(() => {
   const returnValue: Array<Array<Card>> = []
-  cards.value.forEach(c=>{
-    if(returnValue[c.rarity] === undefined){
-      returnValue[c.rarity] = []
+  cards.value.forEach(c => {
+    if (returnValue[c.rarity - 1] === undefined) {
+      returnValue[c.rarity - 1] = []
     }
-    returnValue[c.rarity].push(c)
+    returnValue[c.rarity - 1].push(c)
   })
   return returnValue
 })
+
+const allRarities = computed<Array<number>>(() =>
+  Array.from(Object.values(store.cards).reduce<Set<number>>((r, v) => {
+    r.add(v.rarity)
+    return r
+  }, new Set())).sort()
+)
+
 </script>
 
 <template>
@@ -50,16 +67,19 @@ const cardsByRarity = computed<Array<Array<Card>>>(()=>{
     <div id="filters">
       <TagMultiselect v-if="userStore.adminMode" v-model="tags" />
       <EventMultiselect v-model="events" />
-    </div>
-    
-    <CardUploader v-if="userStore.adminMode" />
-    <div v-for="(rarityCards, rarity) in cardsByRarity" :key="rarity" class="rarity">
-      <span class="rarityHeader">{{ '★'.repeat(rarity) }}</span>
-      <div v-for="(card, id) in rarityCards" :key="id" class="cardContainer"> 
-        <CardItem  :name="card.name" />
+      <div v-for="(stars) in allRarities" :key="stars" id="rarityFilter">
+        <button @click="rarity = stars">{{ '★'.repeat(stars) }}</button>
       </div>
     </div>
-    
+
+    <CardUploader v-if="userStore.adminMode" />
+    <div v-for="(rarityCards, stars) in cardsByRarity" :key="stars" class="rarity">
+      <span v-if="rarityCards != undefined" class="rarityHeader">{{ '★'.repeat(stars + 1) }}</span>
+      <div v-for="(card, id) in rarityCards" :key="id" class="cardContainer">
+        <CardItem :name="card.name" />
+      </div>
+    </div>
+
   </main>
 </template>
 
@@ -70,17 +90,19 @@ main {
   justify-content: center;
   padding-top: 0;
 }
-#filters{
+
+#filters {
   padding-top: 1em;
-  width:100%;
-  display:flex;
+  width: 100%;
+  display: flex;
   z-index: 2;
-  position:sticky;
-  top:0;
+  position: sticky;
+  top: 0;
   background: var(--color-background)
 }
-.rarity{
-  display:flex;
+
+.rarity {
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -88,18 +110,18 @@ main {
 .cardContainer {
   /* height: 100%; */
   width: 144px;
-  margin:20px;
+  margin: 20px;
   object-fit: contain;
 }
-.rarityHeader{
+
+.rarityHeader {
   font-size: 500%;
-  width:100%;
-  height:1em;
+  width: 100%;
+  height: 1em;
   text-align: center;
-  position:sticky;
+  position: sticky;
   top: 55px;
   z-index: 1;
   background: var(--color-background);
 }
-
 </style>
