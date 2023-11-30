@@ -1,4 +1,3 @@
-import {Card} from "../stores/cards"
 type MessageType = {
     message: string
     apiPath: string
