@@ -13,6 +13,7 @@ const userStore = useUserStore()
 // let cards = ref<typeof store.cards>(store.cards)
 const tags = ref<number[]>([])
 const events = ref<number[]>([])
+const ratity = ref<number>()
 
 const cards = computed<Array<Card>>(() => {
   let value = store.cards

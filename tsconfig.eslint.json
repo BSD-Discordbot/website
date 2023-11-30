@@ -4,7 +4,7 @@
     "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/**/__tests__/*", "vite.config.*",  "vitest.config.*",".eslintrc.*"],
     "compilerOptions": {
       "composite": true,
-      "lib": [],
+      "lib": ["webworker"],
       "types": ["node", "jsdom"]
     }
   }

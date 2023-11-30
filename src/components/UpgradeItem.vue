@@ -16,12 +16,12 @@ const props = defineProps({
 <template>
   <div class="upgradeContainer">
     <div class="upgrade upgradeCard">
-    <CardItem :id="store.cards[value].name" ></CardItem>
+    <CardItem :name="store.cards[value].name" ></CardItem>
     =
     </div>
     <div class="upgradeItemContainer">
       <div v-for="({amount, requirement_name}) in store.cards[value].upgrades" :key="requirement_name" class="upgrade upgradeItem">
-        <CardItem :id="store.cards[requirement_name].name" ></CardItem>
+        <CardItem :name="store.cards[requirement_name].name" ></CardItem>
         {{ amount }}
       </div>
     </div>
@@ -54,6 +54,8 @@ const props = defineProps({
 }
 .upgradeItem .card{
   margin: 20px 20px -20px 20px;
+  width: 144px;
+  object-fit: contain;
 }
 .upgradeItemContainer{
   display:flex;

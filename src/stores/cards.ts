@@ -196,6 +196,7 @@ export const useCardStore = defineStore('card', () => {
   // const doubleCount = computed(() => count.value * 2)
 
   async function fetchCards() {
+    const worker = new Worker(new URL("../workers/images.ts", import.meta.url))
     const data = await fetch(apiPath + '/cards')
     const json = await data.json()
     if (!Array.isArray(json)) {
@@ -213,47 +214,13 @@ export const useCardStore = defineStore('card', () => {
         `/src/assets/cartes_${card.rarity}etoile.png`
       ])
     )
-    const atlas = await fetch(apiPath + '/atlas')
-    const atlasBitmap = await createImageBitmap(await atlas.blob())
-    
 
-    const cardHeight = 450//atlasBitmap.height
-    const cardWidth = 288//atlasBitmap.width / Object.keys(mapping).length
+    worker.onmessage = (e: MessageEvent<{card:string, url:string}>) => {
+      const data = e.data
+      images.value[data.card] = data.url
+    };
+    worker.postMessage({message:'fetchCardImages', apiPath, data: {cards: Object.keys(mapping).map(e=>cards.value[e].name)}});
 
-    if ((atlasBitmap.width / cardWidth % 1) != 0 || (atlasBitmap.height / cardHeight %1) != 0) {
-      throw new Error('Invalid atlas dimensions')
-    }
-    function indexToCoordinates(index: number){
-      const nmbWidth = atlasBitmap.width / cardWidth
-      return {x:index%nmbWidth, y:Math.floor(index/nmbWidth)}
-    }
-    const canvas = new OffscreenCanvas(cardWidth, cardHeight)
-    // const context = canvas.getContext('bitmaprenderer')
-    const context = canvas.getContext('2d')
-    console.log("y")
-    await Promise.all(
-      Object.values(cards.value).sort((a,b)=>a.name.localeCompare(b.name)).map(async (card, index) => {
-        const coords = indexToCoordinates(index)
-        const bitmap = await createImageBitmap(
-          atlasBitmap,
-          coords.x*cardWidth,
-          coords.y*cardHeight,
-          cardWidth,
-          cardHeight
-        )
-        context?.drawImage(bitmap, 0, 0)
-        // context?.transferFromImageBitmap(bitmap)
-        bitmap.close()
-        return { url: URL.createObjectURL(await canvas.convertToBlob()), card }
-      })
-    ).then((e) => {
-      e.forEach(({ url, card }) => {
-        images.value[card.name] = url
-      })
-    })
-    triggerRef(images)
-    atlasBitmap.close()
-    console.log("z")
   }
 
   async function uploadImage(file: File, card: string) {
